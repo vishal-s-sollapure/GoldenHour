@@ -1,6 +1,7 @@
 # GoldenHour v1.0.0 Release Notes 🚨
 *Release Candidate: v1.0.0*  
-*Target: Public GitHub Repository & Public Demonstration*
+*Target: Public GitHub Repository & Public Live Demonstration*  
+*Public Live Demo:* [https://goldenhour-emerency.onrender.com/](https://goldenhour-emerency.onrender.com/)
 
 ---
 

@@ -3,9 +3,12 @@
 > A safety-first emergency response coordination web platform designed for rural and semi-urban communities in India.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render%20HTTPS-brightgreen.svg)](https://goldenhour-emerency.onrender.com/)
 [![Node.js Runtime](https://img.shields.io/badge/Node.js-Built--in%20HTTP%20%2F%20Express-green.svg)](https://nodejs.org)
 [![Tests Passing](https://img.shields.io/badge/Tests-12%2F12%20Passed-brightgreen.svg)](tests/api.test.js)
 [![Emergency Dialer](https://img.shields.io/badge/Emergency%20Dialer-India%20112%20Unblocked-red.svg)](tel:112)
+
+🌐 **Live Demo:** [https://goldenhour-emerency.onrender.com/](https://goldenhour-emerency.onrender.com/)
 
 ---
 
