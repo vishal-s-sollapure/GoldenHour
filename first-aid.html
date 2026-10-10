@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoldenHour — Verified First-Aid Guidance (EN / HI / KN)</title>
+  <meta name="description" content="Step-by-step verified first-aid guidance in English, Hindi, and Kannada for Cardiac Arrest, Bleeding, and Recovery Position.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand-title">
+      <a href="index.html" style="color: inherit; text-decoration: none;">🚨 GoldenHour</a>
+      <span class="brand-badge">FIRST AID</span>
+    </div>
+    <div class="lang-selector-wrapper">
+      <select id="langSelect" class="btn btn-outline-light btn-sm">
+        <option value="en" selected>English</option>
+        <option value="hi">हिंदी (Hindi)</option>
+        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- Priority 112 Banner -->
+  <div class="priority-banner" data-i18n="priorityNotice">
+    ⚡ Call 112 is always prioritized. GoldenHour never delays emergency calling.
+  </div>
+
+  <main class="app-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <div>
+        <h2 data-i18n="firstAidHeader">Verified First-Aid Guidance</h2>
+        <p class="text-muted" data-i18n="firstAidSubHeader">
+          Sourced from European Resuscitation Council (ERC 2025) & Indian Resuscitation Council (IRC).
+        </p>
+      </div>
+      <a href="index.html" class="btn btn-outline-light btn-sm">← Back to SOS</a>
+    </div>
+
+    <!-- Guides Container -->
+    <div id="firstAidGuidesContainer"></div>
+
+    <!-- Clinical Sources Attribution Section (Blueprint Section 12) -->
+    <div class="guide-card" style="margin-top: 30px; border-top: 2px solid var(--border-color);">
+      <h3>📚 Clinical Content & Medical Attribution</h3>
+      <p class="text-muted" style="font-size: 0.85rem; margin-top: 6px;">
+        GoldenHour instructions adhere strictly to published clinical guidelines. We do not use generative AI to generate medical recommendations.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px; font-size: 0.82rem;">
+        <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px;">
+          <strong>European Resuscitation Council (ERC)</strong>
+          <div class="text-muted">2025 Adult Basic Life Support Guidelines</div>
+          <div style="color: var(--safety-green); margin-top: 4px;">Reviewed: Oct 2026</div>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px;">
+          <strong>Indian Resuscitation Council (IRC)</strong>
+          <div class="text-muted">Comprehensive Resuscitation Guidance for India</div>
+          <div style="color: var(--safety-green); margin-top: 4px;">Reviewed: Oct 2026</div>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px;">
+          <strong>Government of India ERSS 112</strong>
+          <div class="text-muted">National Unified Emergency Response Support System</div>
+          <div style="color: var(--safety-green); margin-top: 4px;">Dial 112 from any phone</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/translations.js"></script>
+  <script src="js/metronome.js"></script>
+  <script src="js/metrics.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

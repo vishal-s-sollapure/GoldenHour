@@ -1,0 +1,29 @@
+{
+  "name": "goldenhour-emergency-app",
+  "version": "1.0.0",
+  "description": "GoldenHour — Help Before the Ambulance Arrives. Mobile-first emergency response coordination platform.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node tests/api.test.js"
+  },
+  "keywords": [
+    "emergency",
+    "sos",
+    "first-aid",
+    "cpr",
+    "multilingual",
+    "kannada",
+    "hindi",
+    "india-112",
+    "volunteer-coordination",
+    "hospital-prealert"
+  ],
+  "author": "GoldenHour Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
+  }
+}

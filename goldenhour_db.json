@@ -1,0 +1,104 @@
+{
+  "incidents": [
+    {
+      "id": "INC-2026-1001",
+      "status": "ACTIVE",
+      "language": "en",
+      "location_lat": 12.9716,
+      "location_lng": 77.5946,
+      "location_address": "MG Road, Indiranagar, Bengaluru",
+      "created_at": "2026-10-10T07:16:29.062Z",
+      "resolved_at": null
+    }
+  ],
+  "incident_events": [
+    {
+      "id": "EVT-1001-1",
+      "incident_id": "INC-2026-1001",
+      "event_type": "INCIDENT_CREATED",
+      "details": "Emergency SOS initiated via GoldenHour app",
+      "created_at": "2026-10-10T07:16:29.063Z"
+    },
+    {
+      "id": "EVT-1001-2",
+      "incident_id": "INC-2026-1001",
+      "event_type": "FIRST_AID_STARTED",
+      "details": "CPR 110 BPM Metronome started by bystander",
+      "created_at": "2026-10-10T07:16:29.063Z"
+    }
+  ],
+  "demo_volunteers": [
+    {
+      "id": 1,
+      "display_name": "Dr. Priya M.",
+      "training_status": "MD / CPR & BLS Certified",
+      "distance": "350m",
+      "eta": "3 mins",
+      "status": "Available",
+      "demo_only": 1
+    },
+    {
+      "id": 2,
+      "display_name": "Rahul Sharma",
+      "training_status": "Red Cross First Responder",
+      "distance": "600m",
+      "eta": "5 mins",
+      "status": "Available",
+      "demo_only": 1
+    },
+    {
+      "id": 3,
+      "display_name": "Ananya Rao",
+      "training_status": "Paramedic Student",
+      "distance": "850m",
+      "eta": "7 mins",
+      "status": "Available",
+      "demo_only": 1
+    },
+    {
+      "id": 4,
+      "display_name": "Vikram Singh",
+      "training_status": "Basic First Aid Trained",
+      "distance": "1.2km",
+      "eta": "12 mins",
+      "status": "Available",
+      "demo_only": 1
+    }
+  ],
+  "demo_alerts": [
+    {
+      "id": "ALT-501",
+      "incident_id": "INC-2026-1001",
+      "recipient_type": "VOLUNTEER",
+      "recipient_name": "Dr. Priya M.",
+      "status": "DISPATCHED",
+      "created_at": "2026-10-10T07:16:29.063Z",
+      "demo_only": 1
+    },
+    {
+      "id": "ALT-502",
+      "incident_id": "INC-2026-1001",
+      "recipient_type": "HOSPITAL",
+      "recipient_name": "Manipal Hospital Emergency Desk",
+      "status": "DISPATCHED",
+      "created_at": "2026-10-10T07:16:29.063Z",
+      "demo_only": 1
+    }
+  ],
+  "demo_hospitals": [
+    {
+      "id": 1,
+      "name": "Manipal Hospital Emergency Desk",
+      "display_address": "HAL Old Airport Rd, Bengaluru",
+      "trauma_level": "Level 1 Trauma Center",
+      "demo_only": 1
+    },
+    {
+      "id": 2,
+      "name": "St. John’s Medical College Hospital",
+      "display_address": "Koramangala, Bengaluru",
+      "trauma_level": "Level 1 Emergency Dept",
+      "demo_only": 1
+    }
+  ]
+}

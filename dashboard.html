@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoldenHour — Coordination Simulation Dashboard (MVP)</title>
+  <meta name="description" content="Simulated community volunteer alert network and hospital pre-alert trauma desk prototype.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand-title">
+      <a href="index.html" style="color: inherit; text-decoration: none;">🚨 GoldenHour</a>
+      <span class="brand-badge" style="background: var(--accent-purple);">COORDINATION DEMO</span>
+    </div>
+    <div class="lang-selector-wrapper">
+      <a href="index.html" class="btn btn-outline-light btn-sm">← Back to SOS</a>
+    </div>
+  </header>
+
+  <!-- Simulation Notice Banner -->
+  <div class="priority-banner" style="background: rgba(88, 86, 214, 0.15); border-color: var(--accent-purple); color: #C4B5FD;">
+    ℹ️ PROTOTYPE NOTICE: Community volunteer alerts and hospital dashboards are simulated demonstrations. Real emergency dispatches require authorized integrations.
+  </div>
+
+  <main class="app-container">
+    
+    <!-- Section 1: Simulated Volunteer Radar -->
+    <div style="margin-bottom: 30px;">
+      <div id="volunteersListContainer"></div>
+    </div>
+
+    <!-- Section 2: Hospital Pre-Alert Trauma Desk -->
+    <div style="margin-bottom: 30px;">
+      <div id="hospitalDeskContainer"></div>
+    </div>
+
+  </main>
+
+  <script src="js/translations.js"></script>
+  <script src="js/volunteers.js"></script>
+  <script src="js/hospital.js"></script>
+  <script src="js/metrics.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.volunteersEngine) window.volunteersEngine.initRadar();
+      if (window.hospitalEngine) window.hospitalEngine.renderHospitalDashboard();
+    });
+  </script>
+</body>
+</html>

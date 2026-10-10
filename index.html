@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoldenHour — Help Before the Ambulance Arrives</title>
+  <meta name="description" content="Mobile-first emergency response coordination platform. Quick access to India's 112 emergency number, multilingual first-aid guidance, and volunteer/hospital pre-alerts.">
+  
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <!-- Custom Emergency Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- App Header with Responsive Desktop Navigation -->
+  <header class="app-header">
+    <div class="header-brand-wrap">
+      <div class="brand-title">
+        🚨 GoldenHour
+        <span class="brand-badge">INDIA 112</span>
+      </div>
+    </div>
+
+    <!-- Desktop Navigation Bar (Visible on desktop/tablet) -->
+    <nav class="desktop-nav" aria-label="Desktop Navigation">
+      <button class="nav-item active" data-tab="tab-sos">
+        <span class="icon">🚨</span>
+        <span data-i18n="navSos">SOS</span>
+      </button>
+
+      <button class="nav-item" data-tab="tab-firstaid">
+        <span class="icon">🩹</span>
+        <span data-i18n="navFirstAid">First Aid</span>
+      </button>
+
+      <button class="nav-item" data-tab="tab-volunteers">
+        <span class="icon">📡</span>
+        <span data-i18n="navVolunteers">Volunteers</span>
+      </button>
+
+      <button class="nav-item" data-tab="tab-hospital">
+        <span class="icon">🏥</span>
+        <span data-i18n="navHospital">Hospital</span>
+      </button>
+
+      <button class="nav-item" data-tab="tab-metrics">
+        <span class="icon">📊</span>
+        <span data-i18n="navMetrics">Metrics</span>
+      </button>
+    </nav>
+
+    <!-- Language Selector Dropdown -->
+    <div class="header-controls">
+      <div class="lang-selector-wrapper">
+        <label for="langSelect" class="sr-only" style="display: none;">Language:</label>
+        <select id="langSelect" class="lang-select-btn" aria-label="Language Selector">
+          <option value="en" selected>English</option>
+          <option value="hi">हिंदी (Hindi)</option>
+          <option value="kn">ಕನ್ನಡ (Kannada)</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Priority 112 Notice Banner -->
+  <div class="priority-banner" data-i18n="priorityNotice">
+    ⚡ Call 112 is always prioritized. GoldenHour never delays emergency calling.
+  </div>
+
+  <!-- Main Application Container -->
+  <main class="app-container">
+
+    <!-- TAB 1: SOS & Emergency Calling -->
+    <section id="tab-sos" class="tab-content active">
+      
+      <!-- Responsive 2-Column Grid on Desktop -->
+      <div class="sos-desktop-layout">
+        
+        <!-- Left Column: Primary Actions -->
+        <div class="sos-col-primary">
+          
+          <!-- Primary Emergency Hero Card -->
+          <div class="sos-hero-card">
+            <h2 data-i18n="sosHeader">Emergency Response</h2>
+            <p class="text-muted" data-i18n="sosSubHeader">Tap to call 112 & alert nearby contacts instantly</p>
+            
+            <div style="margin: 18px 0 12px 0;">
+              <button id="call112Btn" class="call-112-primary-btn" data-i18n="call112Btn">
+                📞 CALL INDIA 112 NOW
+              </button>
+              <div class="call-112-note" data-i18n="call112Note">
+                Direct connection to emergency services. No login or permission required.
+              </div>
+            </div>
+
+            <button id="triggerSosBtn" class="trigger-sos-btn" data-i18n="triggerSosBtn">
+              🚨 TRIGGER SOS & SHARE LOCATION
+            </button>
+
+            <div id="sosStatusCard" style="display: none; margin-top: 14px; padding: 12px; background: rgba(255,59,48,0.18); border-radius: 12px; border: 1px solid rgba(255,59,48,0.4);">
+              🟢 <strong>SOS Broadcast Active:</strong> Volunteer Radar & Hospital Pre-Alert Notified.
+            </div>
+          </div>
+
+          <!-- Emergency Contacts Section -->
+          <div class="contacts-section">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h3 data-i18n="contactsHeader">Emergency Contacts</h3>
+              <button id="addContactBtn" class="btn btn-outline-light btn-sm" data-i18n="addContactBtn">+ Add Contact</button>
+            </div>
+
+            <div id="contactsList"></div>
+
+            <div style="display: flex; gap: 10px; margin-top: 16px;">
+              <button id="shareSmsBtn" class="btn btn-secondary" style="flex: 1;" data-i18n="shareSmsBtn">📱 Share via SMS</button>
+              <button id="shareWhatsappBtn" class="btn btn-success" style="flex: 1;" data-i18n="shareWhatsappBtn">💬 Share via WhatsApp</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Live Map & Location Status -->
+        <div class="sos-col-secondary">
+          
+          <!-- Live Location Card with Interactive Leaflet Map -->
+          <div class="map-card">
+            <div class="map-header">
+              <div>
+                <strong>📍 Live Emergency Location</strong>
+                <div id="locationSharingBadge" style="font-size: 0.75rem; color: #34C759; margin-top: 2px;">🟢 Sharing Active</div>
+              </div>
+              <button id="toggleLocationSharingBtn" class="btn btn-secondary btn-sm" data-i18n="stopSharingBtn">
+                Pause Location
+              </button>
+            </div>
+            
+            <div id="leafletMap"></div>
+            
+            <div class="location-details-bar">
+              <div id="locationStatusText" data-i18n="locationStatus">Location: Fetching GPS coordinates...</div>
+              <div id="locationAddressText" style="font-weight: 600; margin-top: 6px; color: #FFF;">📍 Bengaluru, Karnataka, India (Default Coordinates)</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- TAB 2: Multilingual First-Aid Guides -->
+    <section id="tab-firstaid" class="tab-content">
+      <div style="margin-bottom: 20px;">
+        <h2 data-i18n="firstAidHeader">Verified First-Aid Guidance</h2>
+        <p class="text-muted" data-i18n="firstAidSubHeader">
+          Step-by-step instructions with voice support. Sourced from Indian Resuscitation Council.
+        </p>
+      </div>
+
+      <!-- Container for CPR, Bleeding, Recovery Guides -->
+      <div id="firstAidGuidesContainer"></div>
+    </section>
+
+    <!-- TAB 3: Nearby Volunteers (Simulated MVP) -->
+    <section id="tab-volunteers" class="tab-content">
+      <div style="margin-bottom: 20px;">
+        <h2 data-i18n="volunteersHeader">Nearby Volunteer Alert Network (Simulated)</h2>
+        <p class="text-muted" data-i18n="volunteersSubHeader">
+          Community responders in a 1km radius receiving instant notification.
+        </p>
+      </div>
+
+      <div id="volunteersListContainer"></div>
+    </section>
+
+    <!-- TAB 4: Hospital Pre-Alert Dashboard -->
+    <section id="tab-hospital" class="tab-content">
+      <div style="margin-bottom: 20px;">
+        <h2 data-i18n="hospitalHeader">Hospital Emergency Desk (Pre-Alert Prototype)</h2>
+        <p class="text-muted" data-i18n="hospitalSubHeader">
+          Authorized trauma centers receive patient payload before arrival.
+        </p>
+      </div>
+
+      <div id="hospitalDeskContainer"></div>
+    </section>
+
+    <!-- TAB 5: Demo Metrics & Safety Compliance -->
+    <section id="tab-metrics" class="tab-content">
+      <div style="margin-bottom: 20px;">
+        <h2 data-i18n="metricsHeader">Demo Impact & Safety Compliance Dashboard</h2>
+        <p class="text-muted" data-i18n="metricsSubHeader">
+          Live measurement of response actions, prototype metrics, and safety rules.
+        </p>
+      </div>
+
+      <!-- Metrics Cards Grid -->
+      <div class="metrics-cards-grid">
+        <div class="guide-card" style="margin-bottom: 0;">
+          <div class="text-muted">Time to First Action</div>
+          <div id="metricTimeToAction" style="font-size: 1.5rem; font-weight: 800; color: #FF3B30; margin-top: 6px;">
+            Awaiting user action...
+          </div>
+        </div>
+
+        <div class="guide-card" style="margin-bottom: 0;">
+          <div class="text-muted">Volunteers Reached</div>
+          <div id="metricVolunteersCount" style="font-size: 1.5rem; font-weight: 800; color: #007AFF; margin-top: 6px;">
+            0 simulated alerts
+          </div>
+        </div>
+
+        <div class="guide-card" style="margin-bottom: 0;">
+          <div class="text-muted">Guides Completed</div>
+          <div id="metricGuideCount" style="font-size: 1.5rem; font-weight: 800; color: #34C759; margin-top: 6px;">
+            0 / 3 guides completed
+          </div>
+        </div>
+      </div>
+
+      <!-- Safety Verification Checklist -->
+      <div class="guide-card">
+        <h3 data-i18n="safetyCheckTitle" style="margin-bottom: 12px;">Safety & Privacy Verification Matrix</h3>
+        <ul style="list-style: none; padding: 0;">
+          <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); color: #34C759;">
+            ✅ <strong>Priority 112 Call Access:</strong> Direct dialing unblocked & instant.
+          </li>
+          <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); color: #34C759;">
+            ✅ <strong>Strict Non-Diagnostic Policy:</strong> Enforced (No AI symptom prediction or medical diagnosis).
+          </li>
+          <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); color: #34C759;">
+            ✅ <strong>Clinical Sourcing:</strong> Guidelines sourced from Indian Resuscitation Council (IRC) & Red Cross.
+          </li>
+          <li style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); color: #34C759;">
+            ✅ <strong>Simulation Transparency:</strong> Explicit simulation badges displayed on mock modules.
+          </li>
+          <li style="padding: 10px 0; color: #34C759;">
+            ✅ <strong>Geolocation Control:</strong> Privacy consent & pause switch fully functional.
+          </li>
+        </ul>
+      </div>
+
+      <!-- User Action Timeline Log -->
+      <div class="guide-card" style="margin-top: 20px;">
+        <h3>📜 Demo User Action Log</h3>
+        <div id="metricsTimelineLogs" style="margin-top: 12px; font-size: 0.85rem;">
+          <div class="text-muted">No actions recorded yet. Tap 112, SOS, or First Aid guides to generate logs.</div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Mobile Bottom Navigation Bar (Visible ONLY on mobile devices) -->
+  <nav class="bottom-nav" aria-label="Mobile Bottom Navigation">
+    <button class="nav-item active" data-tab="tab-sos">
+      <span class="icon">🚨</span>
+      <span data-i18n="navSos">SOS</span>
+    </button>
+
+    <button class="nav-item" data-tab="tab-firstaid">
+      <span class="icon">🩹</span>
+      <span data-i18n="navFirstAid">First Aid</span>
+    </button>
+
+    <button class="nav-item" data-tab="tab-volunteers">
+      <span class="icon">📡</span>
+      <span data-i18n="navVolunteers">Volunteers</span>
+    </button>
+
+    <button class="nav-item" data-tab="tab-hospital">
+      <span class="icon">🏥</span>
+      <span data-i18n="navHospital">Hospital</span>
+    </button>
+
+    <button class="nav-item" data-tab="tab-metrics">
+      <span class="icon">📊</span>
+      <span data-i18n="navMetrics">Metrics</span>
+    </button>
+  </nav>
+
+  <!-- Leaflet Map Library -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Application Modules -->
+  <script src="js/translations.js"></script>
+  <script src="js/metronome.js"></script>
+  <script src="js/volunteers.js"></script>
+  <script src="js/hospital.js"></script>
+  <script src="js/metrics.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,761 @@
+/* GoldenHour — Design System & Emergency Stylesheet */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap');
+
+:root {
+  --bg-primary: #0B0F19;
+  --bg-secondary: #161C2E;
+  --bg-card: rgba(22, 28, 46, 0.95);
+  --border-color: rgba(255, 255, 255, 0.12);
+  --text-primary: #F3F4F6;
+  --text-secondary: #9CA3AF;
+  
+  --emergency-red: #FF3B30;
+  --emergency-red-glow: rgba(255, 59, 48, 0.4);
+  --warning-amber: #FF9500;
+  --safety-green: #34C759;
+  --medical-blue: #007AFF;
+  --accent-purple: #5856D6;
+
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Accessible Focus States */
+:focus-visible {
+  outline: 3px solid var(--medical-blue) !important;
+  outline-offset: 2px !important;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* App Header */
+.app-header {
+  background: rgba(11, 15, 25, 0.98);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-title {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #FFF;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-badge {
+  background: var(--emergency-red);
+  color: white;
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Desktop Navigation (Header Pills) */
+.desktop-nav {
+  display: none; /* Shown on desktop via media query */
+}
+
+.lang-select-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-color);
+  color: white;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.lang-select-btn:hover {
+  border-color: var(--medical-blue);
+}
+
+.priority-banner {
+  background: rgba(255, 149, 0, 0.12);
+  border-bottom: 1px solid rgba(255, 149, 0, 0.3);
+  color: var(--warning-amber);
+  padding: 8px 16px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Container */
+.app-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 18px;
+}
+
+/* Tabs Navigation */
+.tab-content {
+  display: none;
+}
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive SOS Layout (Grid on Desktop, Stack on Mobile) */
+.sos-desktop-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+/* Hero Emergency Call 112 Card */
+.sos-hero-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 26px 22px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  margin-bottom: 20px;
+}
+
+.call-112-primary-btn {
+  background: linear-gradient(135deg, #FF3B30, #D70015);
+  color: white;
+  width: 100%;
+  min-height: 58px;
+  padding: 16px 20px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px var(--emergency-red-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.call-112-primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px var(--emergency-red-glow);
+}
+
+.call-112-note {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.trigger-sos-btn {
+  background: rgba(255, 59, 48, 0.15);
+  color: var(--emergency-red);
+  border: 2px solid var(--emergency-red);
+  width: 100%;
+  padding: 14px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 14px;
+  cursor: pointer;
+  min-height: 48px;
+  transition: all 0.2s ease;
+}
+
+.trigger-sos-btn.sos-active {
+  background: var(--emergency-red);
+  color: white;
+}
+
+/* Map Card */
+.map-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.map-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#leafletMap {
+  height: 220px;
+  width: 100%;
+  background: #1a1e29;
+}
+
+.leaflet-control-attribution {
+  font-size: 0.65rem !important;
+  background: rgba(0, 0, 0, 0.7) !important;
+  color: #bbb !important;
+}
+
+.location-details-bar {
+  padding: 14px 20px;
+  font-size: 0.85rem;
+  background: rgba(0, 0, 0, 0.25);
+  line-height: 1.4;
+}
+
+/* Emergency Contacts Section */
+.contacts-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 22px 20px;
+}
+
+.contact-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 52px;
+}
+
+/* First Aid Guides */
+.guide-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.metronome-box {
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.3);
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+  margin: 16px 0;
+}
+
+.metronome-circle {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.05rem;
+  margin: 0 auto 14px auto;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.4);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
+  user-select: none;
+}
+
+.metronome-circle.running {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 0 24px rgba(16, 185, 129, 0.5);
+}
+
+.metronome-circle.pulsing {
+  transform: scale(1.18);
+  box-shadow: 0 0 36px rgba(16, 185, 129, 0.9);
+}
+
+.step-card {
+  display: flex;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.step-number {
+  background: var(--medical-blue);
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.step-content h4 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.step-content p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.source-badge {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-color);
+}
+
+/* Volunteer Cards */
+.volunteer-radar-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.radar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.volunteer-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.volunteer-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.volunteer-card.accepted-card {
+  border-color: var(--safety-green);
+  background: rgba(52, 199, 89, 0.08);
+}
+
+.v-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.v-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #FFF;
+}
+
+.v-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+.badge-available {
+  background: rgba(52, 199, 89, 0.15);
+  color: #34C759;
+  border: 1px solid rgba(52, 199, 89, 0.4);
+}
+
+.badge-accepted {
+  background: rgba(52, 199, 89, 0.25);
+  color: #34C759;
+  border: 1px solid rgba(52, 199, 89, 0.6);
+}
+
+.badge-busy {
+  background: rgba(142, 142, 147, 0.15);
+  color: #AAA;
+}
+
+.v-qual {
+  font-size: 0.88rem;
+  color: #D1D5DB;
+  margin-bottom: 8px;
+}
+
+.v-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.broadcast-status-banner {
+  background: rgba(52, 199, 89, 0.15);
+  border: 1px solid rgba(52, 199, 89, 0.4);
+  color: #A7F3D0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  margin: 14px 0;
+  line-height: 1.4;
+}
+
+/* Hospital Desk View */
+.hospital-desk-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.hospital-desk-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.incident-payload-card {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px dashed var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 14px;
+}
+
+.incident-payload-card.ack-card {
+  border: 1px solid var(--safety-green);
+  background: rgba(52, 199, 89, 0.06);
+}
+
+.inc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.inc-id {
+  font-weight: 800;
+  color: var(--emergency-red);
+  font-size: 1.05rem;
+}
+
+.inc-type-tag {
+  background: rgba(255, 59, 48, 0.15);
+  color: #FFA19B;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.inc-time {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.inc-body-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.eta-highlight {
+  color: var(--emergency-red);
+  font-weight: 800;
+  font-size: 1.15rem;
+}
+
+/* Simulation Badges */
+.simulation-badge {
+  display: inline-block;
+  background: rgba(88, 86, 214, 0.2);
+  color: #C4B5FD;
+  border: 1px solid rgba(88, 86, 214, 0.4);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 6px;
+}
+
+.simulation-badge.warning-badge {
+  background: rgba(255, 149, 0, 0.2);
+  color: var(--warning-amber);
+  border-color: rgba(255, 149, 0, 0.4);
+}
+
+/* Metrics Cards Grid */
+.metrics-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* Timeline Logs */
+.timeline-log-item {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.log-time {
+  font-weight: 700;
+  color: var(--medical-blue);
+  font-size: 0.82rem;
+  min-width: 70px;
+}
+
+.log-action {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-size: 0.88rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.btn:active {
+  opacity: 0.85;
+}
+
+.btn-primary { background: var(--emergency-red); color: white; }
+.btn-secondary { background: var(--medical-blue); color: white; }
+.btn-success { background: var(--safety-green); color: white; }
+.btn-danger { background: var(--emergency-red); color: white; }
+.btn-warning { background: var(--warning-amber); color: black; }
+.btn-outline-danger { background: transparent; border: 1px solid var(--emergency-red); color: var(--emergency-red); }
+.btn-outline-light { background: transparent; border: 1px solid var(--border-color); color: white; }
+.btn-sm { font-size: 0.8rem; padding: 6px 12px; min-height: 38px; }
+
+.text-muted { color: var(--text-secondary); }
+
+/* Pulse GPS Marker */
+.custom-pulse-marker {
+  position: relative;
+}
+.gps-pulse-dot {
+  width: 20px;
+  height: 20px;
+  background: var(--emergency-red);
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--emergency-red);
+}
+
+/* =========================================================
+   RESPONSIVE DESIGN SYSTEM: DESKTOP & MOBILE MEDIA QUERIES
+   ========================================================= */
+
+/* Mobile Views (width < 768px) */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 78px; /* Room for bottom bar on phone */
+  }
+
+  .desktop-nav {
+    display: none !important;
+  }
+
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(11, 15, 25, 0.98);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    padding: 6px 4px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    z-index: 1000;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
+  }
+
+  .bottom-nav .nav-item {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 8px;
+    flex: 1;
+    max-width: 20%;
+    min-height: 48px;
+  }
+
+  .bottom-nav .nav-item.active {
+    color: var(--emergency-red);
+    font-weight: 700;
+  }
+
+  .bottom-nav .nav-item span:last-child {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sos-desktop-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  #leafletMap {
+    height: 190px;
+  }
+}
+
+/* Tablet & Desktop Views (width >= 768px) */
+@media (min-width: 768px) {
+  body {
+    padding-bottom: 24px; /* No bottom bar needed on desktop */
+  }
+
+  /* Hide mobile bottom navigation on desktop completely! */
+  .bottom-nav {
+    display: none !important;
+  }
+
+  /* Show sleek desktop navigation pills in top header */
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    padding: 4px 8px;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+  }
+
+  .desktop-nav .nav-item {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    padding: 8px 14px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    min-height: 40px;
+  }
+
+  .desktop-nav .nav-item:hover {
+    color: #FFF;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .desktop-nav .nav-item.active {
+    background: rgba(255, 59, 48, 0.18);
+    color: #FFF;
+    border-color: rgba(255, 59, 48, 0.5);
+    font-weight: 700;
+  }
+
+  /* Desktop 2-Column Command Layout for SOS Tab */
+  .sos-desktop-layout {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  #leafletMap {
+    height: 340px; /* Taller, immersive map on desktop */
+  }
+
+  .volunteer-cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .metrics-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .inc-body-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
