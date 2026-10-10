@@ -574,6 +574,12 @@ function renderFirstAidGuides(t) {
           <button id="metronome-btn" class="btn" style="background: #ef4444; color: white; width: 100%; max-width: 380px; margin: 0 auto; min-height: 48px; font-weight: 700;" onclick="toggleCprMetronome()">
             🎵 Start CPR Compression Metronome (110 BPM)
           </button>
+          <div class="cpr-clinical-note" style="margin-top: 12px; font-size: 0.8rem; color: #cbd5e1; line-height: 1.45; text-align: left; background: rgba(0,0,0,0.25); padding: 10px 14px; border-radius: 8px;">
+            <strong style="color: #ff9f0a;">⚠️ Resuscitation Protocol Notice:</strong><br>
+            • <strong>Trained Rescuers:</strong> Execute 30 chest compressions followed by 2 rescue breaths. Resume compressions immediately.<br>
+            • <strong>Untrained Bystanders:</strong> Continue continuous <em>hands-only</em> compressions at the 110 BPM metronome rhythm without pauses until 112 personnel arrive.<br>
+            • <em>Do not interrupt compressions solely based on cycle counts if rescue breaths cannot be delivered safely.</em>
+          </div>
         </div>
       ` : ''}
 
@@ -624,6 +630,9 @@ function toggleCprMetronome() {
       circle.innerHTML = "<span>110</span><span style='font-size: 0.7rem; font-weight: 600;'>BPM</span>";
     }
   } else {
+    // Ensure AudioContext is initialized/resumed on user click gesture
+    getAudioContext();
+
     // 110 BPM = 60,000ms / 110 ≈ 545ms per beat
     playBeepSound();
     triggerBeatVisual();
@@ -667,13 +676,25 @@ function triggerBeatVisual() {
   }, 140);
 }
 
+// Reusable single AudioContext to prevent hardware context leaks
+function getAudioContext() {
+  if (!window._cprAudioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) {
+      window._cprAudioCtx = new AudioContextClass();
+    }
+  }
+  if (window._cprAudioCtx && window._cprAudioCtx.state === 'suspended') {
+    window._cprAudioCtx.resume().catch(() => {});
+  }
+  return window._cprAudioCtx;
+}
+
 function playBeepSound() {
   try {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    const ctx = new AudioContext();
-    if (ctx.state === 'suspended') {
-      ctx.resume();
-    }
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     

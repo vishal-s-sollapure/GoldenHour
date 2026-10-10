@@ -25,10 +25,13 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon'
 };
 
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';
+const MAX_BODY_SIZE = 100 * 1024; // 100 KB limit to prevent memory exhaustion DoS
+
 function sendJson(res, statusCode, data) {
   res.writeHead(statusCode, {
     'Content-Type': 'application/json; charset=UTF-8',
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
     'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type'
   });
@@ -37,8 +40,21 @@ function sendJson(res, statusCode, data) {
 
 function parseJsonBody(req, callback) {
   let body = '';
-  req.on('data', chunk => { body += chunk; });
+  let exceeded = false;
+
+  req.on('data', chunk => {
+    if (exceeded) return;
+    body += chunk;
+    if (body.length > MAX_BODY_SIZE) {
+      exceeded = true;
+      const err = new Error('Payload Too Large: Maximum payload limit is 100KB');
+      err.statusCode = 413;
+      callback(err);
+    }
+  });
+
   req.on('end', () => {
+    if (exceeded) return;
     try {
       callback(null, body ? JSON.parse(body) : {});
     } catch (e) {
@@ -93,15 +109,27 @@ function handleRequest(req, res) {
     return parseJsonBody(req, (err, payload) => {
       if (err) return sendJson(res, 400, { error: 'Invalid JSON payload', demoOnly: true });
 
+      // Input Validation
+      const { language, location_lat, location_lng, location_address } = payload || {};
+      if (language && !['en', 'hi', 'kn'].includes(language)) {
+        return sendJson(res, 400, { error: 'Invalid language specified. Supported: en, hi, kn', demoOnly: true });
+      }
+      if (location_lat !== undefined && (typeof location_lat !== 'number' || location_lat < -90 || location_lat > 90)) {
+        return sendJson(res, 400, { error: 'Invalid latitude value. Range: -90 to 90', demoOnly: true });
+      }
+      if (location_lng !== undefined && (typeof location_lng !== 'number' || location_lng < -180 || location_lng > 180)) {
+        return sendJson(res, 400, { error: 'Invalid longitude value. Range: -180 to 180', demoOnly: true });
+      }
+
       const newId = `INC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
       const now = new Date().toISOString();
       const incident = {
         id: newId,
         status: 'ACTIVE',
-        language: payload.language || 'en',
-        location_lat: payload.location_lat || 12.9716,
-        location_lng: payload.location_lng || 77.5946,
-        location_address: payload.location_address || 'MG Road, Indiranagar, Bengaluru',
+        language: language || 'en',
+        location_lat: location_lat || 12.9716,
+        location_lng: location_lng || 77.5946,
+        location_address: (typeof location_address === 'string' && location_address.trim()) ? location_address.trim().slice(0, 200) : 'Bengaluru, Karnataka, India',
         created_at: now,
         resolved_at: null
       };
@@ -111,7 +139,7 @@ function handleRequest(req, res) {
         id: `EVT-${Date.now()}`,
         incident_id: newId,
         event_type: 'INCIDENT_CREATED',
-        details: 'SOS incident recorded in persistent SQLite store',
+        details: 'SOS incident recorded in persistent storage',
         created_at: now
       });
 
@@ -134,16 +162,21 @@ function handleRequest(req, res) {
   const eventMatch = pathname.match(/^\/api\/incidents\/([a-zA-Z0-9_-]+)\/events$/);
   if (eventMatch && method === 'POST') {
     const incId = eventMatch[1];
+    const incident = db.getIncidentById(incId);
+    if (!incident) {
+      return sendJson(res, 404, { error: 'Incident not found', demoOnly: true });
+    }
+
     return parseJsonBody(req, (err, payload) => {
-      if (err || !payload.event_type) {
-        return sendJson(res, 400, { error: 'event_type is required', demoOnly: true });
+      if (err || !payload.event_type || typeof payload.event_type !== 'string' || payload.event_type.trim().length === 0) {
+        return sendJson(res, 400, { error: 'event_type is required and must be a non-empty string', demoOnly: true });
       }
 
       const newEvent = {
         id: `EVT-${Date.now()}`,
         incident_id: incId,
-        event_type: payload.event_type,
-        details: payload.details || '',
+        event_type: payload.event_type.trim().slice(0, 100),
+        details: typeof payload.details === 'string' ? payload.details.slice(0, 500) : '',
         created_at: new Date().toISOString()
       };
 
@@ -164,17 +197,32 @@ function handleRequest(req, res) {
   // 7. POST /api/demo/alerts
   if (pathname === '/api/demo/alerts' && method === 'POST') {
     return parseJsonBody(req, (err, payload) => {
+      if (err) return sendJson(res, 400, { error: 'Invalid JSON', demoOnly: true });
+
+      const { recipient_type, incident_id, recipient_name } = payload || {};
+      if (!recipient_type || !['VOLUNTEER', 'HOSPITAL'].includes(recipient_type)) {
+        return sendJson(res, 400, {
+          error: 'recipient_type must be either VOLUNTEER or HOSPITAL',
+          demoOnly: true
+        });
+      }
+
       const alert = {
         id: `ALT-${Math.floor(100 + Math.random() * 900)}`,
-        incident_id: payload.incident_id || 'INC-2026-1001',
-        recipient_type: payload.recipient_type || 'VOLUNTEER',
-        recipient_name: payload.recipient_name || 'Dr. Priya M.',
+        incident_id: incident_id || 'INC-2026-1001',
+        recipient_type,
+        recipient_name: recipient_name || (recipient_type === 'VOLUNTEER' ? 'Community Volunteer' : 'Trauma Desk'),
         status: 'DISPATCHED',
         created_at: new Date().toISOString(),
         demo_only: 1
       };
       db.createAlert(alert);
-      return sendJson(res, 201, { success: true, demoOnly: true, alert });
+      return sendJson(res, 201, {
+        success: true,
+        demoOnly: true,
+        notice: 'SIMULATED ALERT GENERATED — NOT A LIVE MEDICAL DISPATCH',
+        alert
+      });
     });
   }
 
@@ -207,12 +255,91 @@ function handleRequest(req, res) {
     });
   }
 
+  // 11. GET /api/test-run (Self-contained in-process acceptance verification test runner)
+  if (pathname === '/api/test-run' && method === 'GET') {
+    const testResults = [];
+    const runTest = (name, fn) => {
+      try {
+        fn();
+        testResults.push({ name, status: 'PASSED' });
+      } catch (e) {
+        testResults.push({ name, status: 'FAILED', error: e.message });
+      }
+    };
+
+    // Suite 1: Initial state
+    runTest('T1: Incidents collection is array', () => {
+      const incs = db.getIncidents();
+      if (!Array.isArray(incs)) throw new Error('Not an array');
+    });
+
+    // Suite 2: Incident Creation
+    let testIncId = null;
+    runTest('T2: Incident creation with valid attributes', () => {
+      const inc = db.createIncident({
+        id: `INC-TEST-${Date.now()}`,
+        status: 'ACTIVE',
+        language: 'hi',
+        location_lat: 12.9716,
+        location_lng: 77.5946,
+        location_address: 'Test Location, Bengaluru',
+        created_at: new Date().toISOString()
+      });
+      testIncId = inc.id;
+      if (!inc.id || inc.language !== 'hi') throw new Error('Invalid incident created');
+    });
+
+    // Suite 3: Chronological event logging
+    runTest('T3: Chronological event logging', () => {
+      const evt = db.addEvent({
+        id: `EVT-TEST-${Date.now()}`,
+        incident_id: testIncId,
+        event_type: 'CPR_STARTED',
+        details: 'Test CPR metronome started',
+        created_at: new Date().toISOString()
+      });
+      const events = db.getEventsByIncidentId(testIncId);
+      if (!events.some(e => e.id === evt.id)) throw new Error('Event was not persisted');
+    });
+
+    // Suite 4: Simulation transparency flags
+    runTest('T4: Simulation transparency enforcement (demo_only: 1)', () => {
+      const vols = db.getVolunteers();
+      if (!vols.every(v => v.demo_only === 1)) throw new Error('Volunteer without demo_only flag found');
+      const hosps = db.getHospitals();
+      if (!hosps.every(h => h.demo_only === 1)) throw new Error('Hospital without demo_only flag found');
+    });
+
+    // Suite 5: Volunteer status workflow
+    runTest('T5: Volunteer status update workflow', () => {
+      const updated = db.updateVolunteerStatus(1, 'Accepted (En Route)');
+      if (updated.status !== 'Accepted (En Route)') throw new Error('Status not updated');
+    });
+
+    // Suite 6: Atomic file write and reload verification
+    runTest('T6: Atomic database save and reload integrity', () => {
+      db.save();
+      const reloaded = db.load();
+      if (!Array.isArray(reloaded.incidents)) throw new Error('Reloaded data corrupted');
+    });
+
+    const passedCount = testResults.filter(t => t.status === 'PASSED').length;
+    return sendJson(res, 200, {
+      total: testResults.length,
+      passed: passedCount,
+      failed: testResults.length - passedCount,
+      allPassed: passedCount === testResults.length,
+      results: testResults
+    });
+  }
+
   // Static File Serving
   let filePath = pathname === '/' ? '/index.html' : pathname;
-  let safePath = path.join(__dirname, filePath);
+  const normalizedBase = path.resolve(__dirname) + path.sep;
+  let safePath = path.resolve(__dirname, '.' + filePath);
 
   // Security: prevent directory traversal
-  if (!safePath.startsWith(__dirname)) {
+  if (!safePath.startsWith(normalizedBase) && safePath !== path.resolve(__dirname, 'index.html')) {
     res.writeHead(403);
     return res.end('Access Denied');
   }

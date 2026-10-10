@@ -1,4 +1,23 @@
+# Dependencies
 node_modules/
+
+# Environment configurations & secrets
 .env
-.DS_Store
+.env.local
+.env.*.local
+
+# Logs and runtime dumps
 *.log
+npm-debug.log*
+
+# Database runtime temporary and backup files
+goldenhour_db.json.bak
+goldenhour_db.json.tmp*
+*.tmp
+
+# Operating system metadata
+.DS_Store
+Thumbs.db
+
+# Local developer execution helpers
+powershell.cmd

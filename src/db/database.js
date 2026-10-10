@@ -78,23 +78,59 @@ class GoldenHourDB {
   }
 
   load() {
+    // 1. Try reading primary database file
     try {
       if (fs.existsSync(DB_FILE)) {
         const raw = fs.readFileSync(DB_FILE, 'utf8');
         return JSON.parse(raw);
       }
     } catch (err) {
-      console.warn('Could not read existing database file, initializing defaults:', err.message);
+      console.warn('Primary database file corrupted or unreadable. Checking backup...', err.message);
     }
+
+    // 2. Try recovering from backup file if primary failed
+    const bakFile = `${DB_FILE}.bak`;
+    try {
+      if (fs.existsSync(bakFile)) {
+        const rawBak = fs.readFileSync(bakFile, 'utf8');
+        const recovered = JSON.parse(rawBak);
+        console.log('Successfully recovered database from backup file.');
+        this.save(recovered);
+        return recovered;
+      }
+    } catch (bakErr) {
+      console.warn('Backup file also unreadable, falling back to defaults:', bakErr.message);
+    }
+
+    // 3. Fall back to clean default state
     this.save(defaultState);
     return JSON.parse(JSON.stringify(defaultState));
   }
 
   save(dataToSave) {
+    const data = dataToSave || this.data;
+    const tempFile = `${DB_FILE}.tmp.${Date.now()}.${Math.floor(Math.random() * 1000)}`;
+    const bakFile = `${DB_FILE}.bak`;
+
     try {
-      fs.writeFileSync(DB_FILE, JSON.stringify(dataToSave || this.data, null, 2), 'utf8');
+      const jsonString = JSON.stringify(data, null, 2);
+      // Write to temp file first
+      fs.writeFileSync(tempFile, jsonString, 'utf8');
+
+      // Create backup of existing file before replacement
+      if (fs.existsSync(DB_FILE)) {
+        try {
+          fs.copyFileSync(DB_FILE, bakFile);
+        } catch (_) {}
+      }
+
+      // Atomically replace DB file
+      fs.renameSync(tempFile, DB_FILE);
     } catch (err) {
-      console.error('Failed to write database file:', err.message);
+      console.error('Failed to write database file atomically:', err.message);
+      try {
+        if (fs.existsSync(tempFile)) fs.unlinkSync(tempFile);
+      } catch (_) {}
     }
   }
 

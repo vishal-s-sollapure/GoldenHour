@@ -37,7 +37,7 @@ class VolunteersEngine {
 
         ${this.isAlertBroadcasted ? `
           <div class="broadcast-status-banner">
-            🟢 <strong>Alert Dispatched!</strong> 3 Nearby community volunteers received your notification.
+            🟢 <strong>Simulated Notification (Demo MVP):</strong> Synthetic proximity alert generated for 3 mock responders. In a real emergency, call 112 immediately.
           </div>
         ` : ''}
 
@@ -54,7 +54,7 @@ class VolunteersEngine {
                 <div class="v-qual">${v.qualification}</div>
                 <div class="v-meta">
                   <span>📍 ${v.distance} away</span>
-                  <span>⏱ ETA ~${v.eta}</span>
+                  <span>⏱ Simulated ETA ~${v.eta}</span>
                 </div>
               </div>
             `;

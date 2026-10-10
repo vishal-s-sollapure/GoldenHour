@@ -69,11 +69,11 @@ class HospitalEngine {
                     ✅ Acknowledge & Prepare Trauma Bay 1
                   </button>
                   <button class="btn btn-outline-light btn-sm" onclick="window.hospitalEngine.dispatchHospitalAmbulance('${inc.id}')">
-                    🚑 Confirm Hospital Ambulance Dispatched
+                    🚑 Simulate Pre-Alert Dispatch (Demo Only — Not a Real Dispatch)
                   </button>
                 ` : `
                   <div class="status-ack-text">
-                    🟢 Trauma Bay 1 Prepared & Emergency Medical Team Standing By.
+                    🟢 Trauma Bay 1 Prepared & Emergency Medical Team Standing By (Simulated Demo).
                   </div>
                 `}
               </div>
@@ -90,15 +90,15 @@ class HospitalEngine {
       inc.status = 'ACKNOWLEDGED';
       this.renderHospitalDashboard();
       if (window.metricsEngine) {
-        window.metricsEngine.recordAction('Hospital Trauma Desk Acknowledged Pre-Alert');
+        window.metricsEngine.recordAction('Hospital Trauma Desk Acknowledged Pre-Alert (Simulation)');
       }
     }
   }
 
   dispatchHospitalAmbulance(id) {
-    alert('Hospital Ambulance dispatch signal sent (Simulated Integration).');
+    alert('⚠️ SIMULATED DEMO ONLY: No real ambulance has been dispatched. GoldenHour does not replace local emergency services. In a real emergency, call 112 immediately.');
     if (window.metricsEngine) {
-      window.metricsEngine.recordAction('Hospital Dispatched Advanced Life Support Ambulance');
+      window.metricsEngine.recordAction('Simulated Hospital Pre-Alert Dispatched (Demo Only)');
     }
   }
 
@@ -109,7 +109,7 @@ class HospitalEngine {
       type: payload.type || 'Emergency SOS',
       location: payload.location.address || 'User GPS Coordinates',
       coords: `${payload.location.lat.toFixed(4)}, ${payload.location.lng.toFixed(4)}`,
-      eta: '5 minutes',
+      eta: 'Simulated Demo ETA: ~5 mins (Illustrative)',
       bystanderActions: 'GoldenHour SOS Triggered & Location Shared',
       timestamp: payload.timestamp || new Date().toLocaleTimeString(),
       status: 'PENDING_ACKNOWLEDGEMENT'

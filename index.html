@@ -87,7 +87,7 @@
             <p class="text-muted" data-i18n="sosSubHeader">Tap to call 112 & alert nearby contacts instantly</p>
             
             <div style="margin: 18px 0 12px 0;">
-              <button id="call112Btn" class="call-112-primary-btn" data-i18n="call112Btn">
+              <button id="call112Btn" class="call-112-primary-btn" onclick="window.location.href='tel:112'" data-i18n="call112Btn">
                 📞 CALL INDIA 112 NOW
               </button>
               <div class="call-112-note" data-i18n="call112Note">
@@ -100,7 +100,7 @@
             </button>
 
             <div id="sosStatusCard" style="display: none; margin-top: 14px; padding: 12px; background: rgba(255,59,48,0.18); border-radius: 12px; border: 1px solid rgba(255,59,48,0.4);">
-              🟢 <strong>SOS Broadcast Active:</strong> Volunteer Radar & Hospital Pre-Alert Notified.
+              🟢 <strong>Simulation Broadcast Active:</strong> Simulated Volunteer Radar & Hospital Pre-Alert Payload Generated (Demo Only).
             </div>
           </div>
 
@@ -292,6 +292,24 @@
         <div id="metricsTimelineLogs" style="margin-top: 12px; font-size: 0.85rem;">
           <div class="text-muted">No actions recorded yet. Tap 112, SOS, or First Aid guides to generate logs.</div>
         </div>
+      </div>
+
+      <!-- Third-Party Network Privacy & Clinical Governance Disclosures -->
+      <div class="guide-card" style="margin-top: 20px; border-left: 4px solid #007AFF;">
+        <h3 style="font-size: 1rem; margin-bottom: 8px;">🔒 Data Privacy & Third-Party Network Disclosures</h3>
+        <p class="text-muted" style="font-size: 0.8rem; line-height: 1.5; margin-bottom: 12px;">
+          GoldenHour processes user inputs client-side and stores records locally. The following external network transmissions occur strictly for map rendering and speech:
+        </p>
+        <ul style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.6; padding-left: 20px; margin-bottom: 14px;">
+          <li><strong>OpenStreetMap Tile Servers:</strong> Standard HTTP tile requests (<code>tile.openstreetmap.org</code>) receive client IP and viewport coordinates to render map graphics. Zero tracking tokens are sent.</li>
+          <li><strong>Nominatim Reverse Geocoding & Search:</strong> On user request (GPS detect, map click, or area search), coordinates/query are transmitted to OpenStreetMap's public geocoding API to resolve street addresses.</li>
+          <li><strong>Browser Speech Synthesis:</strong> Audio guidance uses the native browser Web Speech API (<code>window.speechSynthesis</code>). Depending on the host OS and browser vendor, synthetic voice processing may occur locally on-device or via the browser's cloud speech engine.</li>
+        </ul>
+
+        <h3 style="font-size: 1rem; margin-bottom: 8px; margin-top: 16px;">⚕️ Clinical Sourcing & Non-Diagnostic Disclaimer</h3>
+        <p class="text-muted" style="font-size: 0.8rem; line-height: 1.5; margin-bottom: 0;">
+          All first-aid instructions are curated from publicly available Basic Life Support (BLS) protocols published by the <strong>Indian Resuscitation Council (IRC)</strong> and the <strong>European Resuscitation Council (ERC)</strong>. GoldenHour is an educational bystander coordination prototype and is <strong>not a certified medical device</strong>. It does not perform clinical diagnosis, triage scoring, or replace licensed paramedics. Always prioritize calling <strong>112</strong> in any life-threatening emergency.
+        </p>
       </div>
 
     </section>
