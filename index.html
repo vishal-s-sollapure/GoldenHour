@@ -128,19 +128,63 @@
           <div class="map-card">
             <div class="map-header">
               <div>
-                <strong>📍 Live Emergency Location</strong>
+                <strong style="font-size: 0.95rem;">📍 Live Emergency Location</strong>
                 <div id="locationSharingBadge" style="font-size: 0.75rem; color: #34C759; margin-top: 2px;">🟢 Sharing Active</div>
               </div>
-              <button id="toggleLocationSharingBtn" class="btn btn-secondary btn-sm" data-i18n="stopSharingBtn">
-                Pause Location
-              </button>
+              <div class="map-header-actions">
+                <button id="detectGpsBtn" class="btn btn-primary btn-sm" onclick="requestLocation(true)" title="Auto-detect GPS location">
+                  🎯 Detect GPS
+                </button>
+                <button id="toggleMapThemeBtn" class="btn btn-outline-light btn-sm" onclick="toggleMapTheme()" title="Toggle Dark/Light Map style">
+                  🌙 Dark Map
+                </button>
+                <button id="toggleLocationSharingBtn" class="btn btn-secondary btn-sm" data-i18n="stopSharingBtn">
+                  Pause
+                </button>
+              </div>
             </div>
             
+            <!-- Leaflet Interactive Map Viewport -->
             <div id="leafletMap"></div>
+
+            <!-- Quick Search Bar for Finding Location -->
+            <div class="map-controls-row">
+              <div class="map-search-wrapper">
+                <input type="text" id="mapSearchInput" placeholder="🔍 Search area, street, city..." aria-label="Search area or city" />
+                <button id="mapSearchBtn" class="btn btn-primary btn-sm" type="button">Find</button>
+              </div>
+            </div>
+
+            <!-- Quick City Jump Chips -->
+            <div class="map-quick-cities">
+              <span class="quick-city-label">📍 Quick Jump:</span>
+              <button type="button" class="city-chip" onclick="quickJumpTo('bengaluru')">Bengaluru</button>
+              <button type="button" class="city-chip" onclick="quickJumpTo('delhi')">Delhi</button>
+              <button type="button" class="city-chip" onclick="quickJumpTo('mumbai')">Mumbai</button>
+              <button type="button" class="city-chip" onclick="quickJumpTo('hyderabad')">Hyderabad</button>
+              <button type="button" class="city-chip" onclick="quickJumpTo('chennai')">Chennai</button>
+              <button type="button" class="city-chip" onclick="quickJumpTo('kolkata')">Kolkata</button>
+            </div>
             
+            <!-- Address and Geolocation Status Details -->
             <div class="location-details-bar">
               <div id="locationStatusText" data-i18n="locationStatus">Location: Fetching GPS coordinates...</div>
               <div id="locationAddressText" style="font-weight: 600; margin-top: 6px; color: #FFF;">📍 Bengaluru, Karnataka, India (Default Coordinates)</div>
+              
+              <div class="map-hint-text">
+                💡 <em>Tip: Tap anywhere on the map or drag the red emergency pin to adjust your location.</em>
+              </div>
+
+              <!-- Permission blocked guidance tip -->
+              <div id="locationPermissionTip" class="location-help-tip" style="display: none;">
+                <div style="font-weight: 700; color: #ff9f0a; margin-bottom: 4px;">
+                  ⚠️ Browser Location Access is Blocked
+                </div>
+                <div style="font-size: 0.8rem; line-height: 1.4; color: #cbd5e1;">
+                  To enable auto-GPS: Click the 🔒 lock / settings icon beside <code>localhost:3000</code> in your browser address bar &rarr; switch <strong>Location</strong> to <strong>Allow</strong> &rarr; then click <strong>🎯 Detect GPS</strong> above.<br>
+                  <em>Or simply tap anywhere on the map or search your area to set your emergency pin!</em>
+                </div>
+              </div>
             </div>
           </div>
 

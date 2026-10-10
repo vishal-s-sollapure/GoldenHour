@@ -40,6 +40,7 @@ function initApp() {
   setupEmergencyCallBtn();
   setupSosTrigger();
   setupLocationSharing();
+  setupLocationControls();
   setupContacts();
   renderCurrentLanguage();
   initLeafletMap();
@@ -172,63 +173,108 @@ function setupSosTrigger() {
   }
 }
 
-// Geolocation Engine & Robust Fallback with Dark Carto Map Styling
-function requestLocation() {
+// Geolocation Engine & Robust Fallback with OpenStreetMap Styling
+function requestLocation(isManualTrigger = false) {
   const locStatusEl = document.getElementById('locationStatusText');
   const addressEl = document.getElementById('locationAddressText');
-  
+  const tipEl = document.getElementById('locationPermissionTip');
+  const detectBtn = document.getElementById('detectGpsBtn');
+
+  if (locStatusEl) locStatusEl.textContent = '📡 Detecting live GPS coordinates...';
+  if (detectBtn) detectBtn.textContent = '⏳ Detecting...';
+
   if (!navigator.geolocation) {
     state.userLocation.permission = 'unsupported';
     state.userLocation.address = 'Bengaluru, Karnataka, India (Default Fallback)';
-    if (locStatusEl) locStatusEl.textContent = 'Geolocation not supported. Default coordinates active.';
+    if (locStatusEl) locStatusEl.textContent = 'Geolocation not supported by device. Default coordinates active.';
     if (addressEl) addressEl.textContent = '📍 Bengaluru, Karnataka, India (Default Fallback)';
-    updateMapMarker(12.9716, 77.5946, '<b>Your Emergency Location</b><br>GoldenHour Active (Default Fallback)');
+    if (detectBtn) detectBtn.textContent = '🎯 Detect GPS';
+    updateMapMarker(12.9716, 77.5946, '<b>Your Emergency Location</b><br>Default Coordinates (GPS Unsupported)');
     return;
   }
 
   navigator.geolocation.getCurrentPosition(
     (position) => {
-      state.userLocation.lat = position.coords.latitude;
-      state.userLocation.lng = position.coords.longitude;
+      if (detectBtn) detectBtn.textContent = '🎯 Detect GPS';
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      state.userLocation.lat = lat;
+      state.userLocation.lng = lng;
       state.userLocation.accuracy = Math.round(position.coords.accuracy);
       state.userLocation.permission = 'granted';
 
       if (locStatusEl) {
-        locStatusEl.textContent = `🟢 Live GPS Active: ${state.userLocation.lat.toFixed(4)}, ${state.userLocation.lng.toFixed(4)} (±${state.userLocation.accuracy}m)`;
+        locStatusEl.textContent = `🟢 Live GPS Active: ${lat.toFixed(4)}, ${lng.toFixed(4)} (±${state.userLocation.accuracy}m)`;
       }
+      if (tipEl) tipEl.style.display = 'none';
 
-      updateMapMarker(state.userLocation.lat, state.userLocation.lng, '<b>Your Emergency Location</b><br>Live GPS Active');
-      fetchAddressFromCoordinates(state.userLocation.lat, state.userLocation.lng);
+      updateMapMarker(lat, lng, '<b>📍 Live Emergency Location</b><br>GPS Coordinates Active<br/><small style="color:#aaa;">Drag pin to fine-tune</small>');
+      fetchAddressFromCoordinates(lat, lng);
+      if (state.map) {
+        state.map.setView([lat, lng], 15);
+      }
     },
     (error) => {
+      if (detectBtn) detectBtn.textContent = '🎯 Detect GPS';
       console.warn('Geolocation denied or unavailable. Using default coordinates:', error.message);
-      state.userLocation.lat = 12.9716;
-      state.userLocation.lng = 77.5946;
       state.userLocation.permission = 'denied';
-      state.userLocation.address = 'Bengaluru, Karnataka, India (Default Fallback)';
+
+      const lat = state.userLocation.lat || 12.9716;
+      const lng = state.userLocation.lng || 77.5946;
 
       if (locStatusEl) {
         locStatusEl.textContent = '🟡 Location permission denied. Default coordinates active (112 dialer fully unblocked).';
       }
-      if (addressEl) {
-        addressEl.textContent = '📍 Bengaluru, Karnataka, India (Default Fallback)';
+      if (tipEl) {
+        tipEl.style.display = 'block';
       }
 
-      updateMapMarker(12.9716, 77.5946, '<b>Your Emergency Location</b><br>GoldenHour Active (Default Coordinates)');
+      updateMapMarker(lat, lng, '<b>Your Emergency Location</b><br>Default Coordinates<br/><small style="color:#aaa;">Tap map or drag pin to your spot</small>');
+      if (!state.userLocation.address || state.userLocation.address.includes('Determining')) {
+        state.userLocation.address = 'Bengaluru, Karnataka, India (Default Fallback)';
+        if (addressEl) addressEl.textContent = '📍 Bengaluru, Karnataka, India (Default Fallback)';
+      }
     },
     { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
   );
+}
+
+function setEmergencyLocation(lat, lng, source = 'manual') {
+  state.userLocation.lat = lat;
+  state.userLocation.lng = lng;
+
+  const locStatusEl = document.getElementById('locationStatusText');
+  const tipEl = document.getElementById('locationPermissionTip');
+
+  if (source === 'gps') {
+    state.userLocation.permission = 'granted';
+    if (locStatusEl) locStatusEl.textContent = `🟢 Live GPS Active: ${lat.toFixed(4)}, ${lng.toFixed(4)} (±${state.userLocation.accuracy || 15}m)`;
+    if (tipEl) tipEl.style.display = 'none';
+  } else if (source === 'search') {
+    if (locStatusEl) locStatusEl.textContent = `📍 Searched Location Set: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+  } else {
+    if (locStatusEl) locStatusEl.textContent = `📍 Manually Pinned Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+  }
+
+  updateMapMarker(lat, lng, `<b>📍 Emergency Location</b><br/>${source === 'gps' ? 'Live GPS Detected' : 'Pinned Location'}<br/><small style="color:#aaa;">Drag pin or tap map to change</small>`);
+  fetchAddressFromCoordinates(lat, lng);
 }
 
 function fetchAddressFromCoordinates(lat, lng) {
   const addressEl = document.getElementById('locationAddressText');
   
   fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error('Reverse geocode failed');
+      return res.json();
+    })
     .then(data => {
       if (data && data.display_name) {
         state.userLocation.address = data.display_name;
         if (addressEl) addressEl.textContent = `📍 ${data.display_name}`;
+        if (state.marker) {
+          state.marker.bindPopup(`<b>📍 Emergency Location</b><br>${data.display_name.slice(0, 60)}...<br/><small style="color:#aaa;">Drag pin to adjust</small>`);
+        }
       } else {
         state.userLocation.address = `GPS Coordinates: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
         if (addressEl) addressEl.textContent = `📍 ${state.userLocation.address}`;
@@ -240,7 +286,7 @@ function fetchAddressFromCoordinates(lat, lng) {
     });
 }
 
-// Leaflet Map Setup with CartoDB Dark Matter tiles matching GoldenHour
+// Leaflet Map Setup with OpenStreetMap (Zero API key required, 100% free & reliable)
 function initLeafletMap() {
   const mapContainer = document.getElementById('leafletMap');
   if (!mapContainer || typeof L === 'undefined') return;
@@ -250,31 +296,166 @@ function initLeafletMap() {
 
   state.map = L.map('leafletMap').setView([lat, lng], 14);
 
-  // Dark-themed tiles matching GoldenHour branding
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  // Standard OpenStreetMap tiles (free, public, no watermarks, no API key needed)
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    subdomains: ['a', 'b', 'c'],
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(state.map);
 
   const customIcon = L.divIcon({
-    className: 'custom-pulse-marker',
-    html: '<div class="gps-pulse-dot"></div>',
-    iconSize: [22, 22]
+    className: 'emergency-pin-marker',
+    html: `
+      <div class="emergency-radar-pulse"></div>
+      <div class="emergency-pin-icon"></div>
+    `,
+    iconSize: [32, 42],
+    iconAnchor: [16, 42],
+    popupAnchor: [0, -42]
   });
 
-  state.marker = L.marker([lat, lng], { icon: customIcon })
-    .addTo(state.map)
-    .bindPopup('<b>Your Emergency Location</b><br>GoldenHour Active (Fallback/GPS)')
+  state.marker = L.marker([lat, lng], {
+    icon: customIcon,
+    draggable: true
+  }).addTo(state.map);
+
+  state.marker.bindPopup('<b>📍 Your Emergency Location</b><br>Drag pin or tap map to update')
     .openPopup();
+
+  // Allow dragging marker to fine-tune location
+  state.marker.on('dragend', (e) => {
+    const pos = e.target.getLatLng();
+    setEmergencyLocation(pos.lat, pos.lng, 'manual');
+  });
+
+  // Tap anywhere on the map to pin emergency location
+  state.map.on('click', (e) => {
+    setEmergencyLocation(e.latlng.lat, e.latlng.lng, 'manual');
+  });
+
+  // Recalculate dimensions to avoid gray tile borders
+  setTimeout(() => {
+    if (state.map) state.map.invalidateSize();
+  }, 250);
 }
 
 function updateMapMarker(lat, lng, popupText = '<b>Your Emergency Location</b><br>GoldenHour Active') {
-  if (state.map && state.marker) {
-    state.map.setView([lat, lng], 14);
+  if (!state.map) return;
+
+  if (!state.marker) {
+    const customIcon = L.divIcon({
+      className: 'emergency-pin-marker',
+      html: `
+        <div class="emergency-radar-pulse"></div>
+        <div class="emergency-pin-icon"></div>
+      `,
+      iconSize: [32, 42],
+      iconAnchor: [16, 42],
+      popupAnchor: [0, -42]
+    });
+
+    state.marker = L.marker([lat, lng], {
+      icon: customIcon,
+      draggable: true
+    }).addTo(state.map);
+
+    state.marker.on('dragend', (e) => {
+      const pos = e.target.getLatLng();
+      setEmergencyLocation(pos.lat, pos.lng, 'manual');
+    });
+  } else {
     state.marker.setLatLng([lat, lng]);
+  }
+
+  state.map.setView([lat, lng], state.map.getZoom() < 13 ? 14 : state.map.getZoom());
+  if (popupText) {
     state.marker.bindPopup(popupText).openPopup();
   }
 }
+
+function quickJumpTo(cityKey) {
+  const cities = {
+    bengaluru: { lat: 12.9716, lng: 77.5946, name: 'Bengaluru, Karnataka, India' },
+    delhi: { lat: 28.6139, lng: 77.2090, name: 'New Delhi, Delhi, India' },
+    mumbai: { lat: 19.0760, lng: 72.8777, name: 'Mumbai, Maharashtra, India' },
+    hyderabad: { lat: 17.3850, lng: 78.4867, name: 'Hyderabad, Telangana, India' },
+    chennai: { lat: 13.0827, lng: 80.2707, name: 'Chennai, Tamil Nadu, India' },
+    kolkata: { lat: 22.5726, lng: 88.3639, name: 'Kolkata, West Bengal, India' }
+  };
+
+  const city = cities[cityKey];
+  if (!city) return;
+
+  setEmergencyLocation(city.lat, city.lng, 'search');
+  if (state.map) {
+    state.map.flyTo([city.lat, city.lng], 14, { duration: 1 });
+  }
+}
+
+function searchLocation() {
+  const input = document.getElementById('mapSearchInput');
+  if (!input || !input.value.trim()) return;
+
+  const query = encodeURIComponent(input.value.trim());
+  const locStatusEl = document.getElementById('locationStatusText');
+  if (locStatusEl) locStatusEl.textContent = `🔍 Searching for "${input.value.trim()}"...`;
+
+  fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`)
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.length > 0) {
+        const lat = parseFloat(data[0].lat);
+        const lng = parseFloat(data[0].lon);
+        setEmergencyLocation(lat, lng, 'search');
+        if (state.map) {
+          state.map.flyTo([lat, lng], 15, { duration: 1.2 });
+        }
+      } else {
+        alert('Area not found. Please try another name or tap directly on the map to pin your location.');
+        if (locStatusEl) locStatusEl.textContent = '❌ Location not found. Tap map to pin manually.';
+      }
+    })
+    .catch(err => {
+      console.warn('Geocoding search failed:', err);
+      alert('Unable to reach address service. You can tap directly on the map to place your pin!');
+    });
+}
+
+function toggleMapTheme() {
+  const mapEl = document.getElementById('leafletMap');
+  const themeBtn = document.getElementById('toggleMapThemeBtn');
+  if (!mapEl) return;
+
+  mapEl.classList.toggle('light-tiles');
+  const isLight = mapEl.classList.contains('light-tiles');
+  if (themeBtn) {
+    themeBtn.textContent = isLight ? '☀️ Light' : '🌙 Dark Map';
+  }
+}
+
+function setupLocationControls() {
+  const searchInput = document.getElementById('mapSearchInput');
+  if (searchInput) {
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        searchLocation();
+      }
+    });
+  }
+
+  const searchBtn = document.getElementById('mapSearchBtn');
+  if (searchBtn) {
+    searchBtn.addEventListener('click', searchLocation);
+  }
+}
+
+// Global window bindings for inline HTML onclick handlers
+window.requestLocation = requestLocation;
+window.setEmergencyLocation = setEmergencyLocation;
+window.toggleMapTheme = toggleMapTheme;
+window.quickJumpTo = quickJumpTo;
+window.searchLocation = searchLocation;
 
 // Location Privacy Toggle
 function setupLocationSharing() {

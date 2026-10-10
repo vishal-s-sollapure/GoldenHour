@@ -220,17 +220,99 @@ html, body {
 }
 
 .map-header {
-  padding: 16px 20px;
+  padding: 14px 18px;
   border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.map-header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 #leafletMap {
-  height: 220px;
+  height: 270px;
   width: 100%;
-  background: #1a1e29;
+  background: #111827;
+  position: relative;
+  z-index: 1;
+}
+
+/* OpenStreetMap Dark Mode Tile Styling */
+#leafletMap .leaflet-tile {
+  filter: invert(100%) hue-rotate(180deg) brightness(88%) contrast(90%);
+  transition: filter 0.3s ease;
+}
+
+/* Toggle back to standard daylight OSM street view */
+#leafletMap.light-tiles .leaflet-tile {
+  filter: none;
+}
+
+.map-controls-row {
+  padding: 10px 16px 6px 16px;
+  background: rgba(15, 23, 42, 0.7);
+  border-top: 1px solid var(--border-color);
+}
+
+.map-search-wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.map-search-wrapper input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 8px 14px;
+  color: white;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.map-search-wrapper input:focus {
+  border-color: #3b82f6;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.map-quick-cities {
+  padding: 6px 16px 10px 16px;
+  background: rgba(15, 23, 42, 0.7);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.quick-city-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.city-chip {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.city-chip:hover {
+  background: rgba(59, 130, 246, 0.3);
+  border-color: #3b82f6;
+  color: white;
 }
 
 .leaflet-control-attribution {
@@ -240,10 +322,25 @@ html, body {
 }
 
 .location-details-bar {
-  padding: 14px 20px;
+  padding: 14px 18px;
   font-size: 0.85rem;
   background: rgba(0, 0, 0, 0.25);
   line-height: 1.4;
+  border-top: 1px solid var(--border-color);
+}
+
+.map-hint-text {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 8px;
+}
+
+.location-help-tip {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 10px;
 }
 
 /* Emergency Contacts Section */
@@ -603,17 +700,69 @@ html, body {
 
 .text-muted { color: var(--text-secondary); }
 
-/* Pulse GPS Marker */
-.custom-pulse-marker {
+/* Custom Emergency Pin Marker with Glowing Radar Wave */
+.emergency-pin-marker {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
   position: relative;
+  cursor: grab;
 }
-.gps-pulse-dot {
-  width: 20px;
-  height: 20px;
-  background: var(--emergency-red);
-  border: 3px solid white;
+
+.emergency-radar-pulse {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  box-shadow: 0 0 12px var(--emergency-red);
+  background: rgba(239, 68, 68, 0.45);
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.9);
+  animation: gpsPulse 2s infinite ease-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.emergency-pin-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border: 2.5px solid #ffffff;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 10px rgba(239, 68, 68, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: transform 0.15s ease;
+}
+
+.emergency-pin-marker:hover .emergency-pin-icon {
+  transform: rotate(-45deg) scale(1.1);
+}
+
+.emergency-pin-icon::after {
+  content: "✚";
+  color: white;
+  font-size: 14px;
+  font-weight: 900;
+  transform: rotate(45deg);
+  line-height: 1;
+}
+
+@keyframes gpsPulse {
+  0% {
+    width: 14px;
+    height: 14px;
+    opacity: 1;
+  }
+  100% {
+    width: 60px;
+    height: 60px;
+    opacity: 0;
+  }
 }
 
 /* =========================================================
