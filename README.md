@@ -3,12 +3,31 @@
 > A safety-first emergency response coordination web platform designed for rural and semi-urban communities in India.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render%20HTTPS-brightgreen.svg)](https://goldenhour-emerency.onrender.com/)
+[![Live Demo (Render)](https://img.shields.io/badge/Live%20Demo-Render%20HTTPS-brightgreen.svg)](https://goldenhour-emerency.onrender.com/)
+[![Live Demo (GitHub Pages)](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-blue.svg)](https://vishal-s-sollapure.github.io/GoldenHour/)
 [![Node.js Runtime](https://img.shields.io/badge/Node.js-Built--in%20HTTP%20%2F%20Express-green.svg)](https://nodejs.org)
 [![Tests Passing](https://img.shields.io/badge/Tests-12%2F12%20Passed-brightgreen.svg)](tests/api.test.js)
 [![Emergency Dialer](https://img.shields.io/badge/Emergency%20Dialer-India%20112%20Unblocked-red.svg)](tel:112)
 
-🌐 **Live Demo:** [https://goldenhour-emerency.onrender.com/](https://goldenhour-emerency.onrender.com/)
+🌐 **Live Deployed URLs:**
+- **Full-Stack Application (Render):** [https://goldenhour-emerency.onrender.com/](https://goldenhour-emerency.onrender.com/)
+- **Static Web Deployment (GitHub Pages):** [https://vishal-s-sollapure.github.io/GoldenHour/](https://vishal-s-sollapure.github.io/GoldenHour/)
+
+---
+
+## 📑 Table of Contents
+- [1. Introduction & Problem Statement](#-1-introduction--problem-statement)
+- [2. Who Can Use It? (Target Users)](#-2-who-can-use-it-target-users)
+- [3. Application Screenshots](#-3-application-screenshots)
+- [4. Technology Stack & Architecture](#-4-technology-stack--architecture)
+- [5. Installation & Local Startup](#-5-installation--local-startup)
+- [6. API Reference](#-6-api-reference)
+- [7. Automated Testing & Verification](#-7-automated-testing--verification)
+- [8. Database Persistence & Storage Architecture](#-8-database-persistence--storage-architecture)
+- [9. Clinical Guidelines & Medical Attributions](#-9-clinical-guidelines--medical-attributions)
+- [10. Privacy, Security & Third-Party Disclosures](#-10-privacy-security--third-party-disclosures)
+- [11. Environment Configuration](#-11-environment-configuration)
+- [12. License & Contributing](#-12-license--contributing)
 
 ---
 
@@ -27,7 +46,30 @@ In life-threatening medical emergencies (e.g., sudden cardiac arrest, severe tra
 
 ---
 
-## 📸 2. Application Screenshots
+## 👥 2. Who Can Use It? (Target Users)
+
+GoldenHour requires **zero registration, login, or app store downloads**, making it instantly accessible on any modern mobile or desktop web browser:
+
+1. **Bystanders & General Public (Primary Users)**:
+   - **Immediate 112 Access**: Instantly initiates a direct call to India's national emergency number (**112**) without filling forms or waiting for GPS lock.
+   - **Multilingual First-Aid Guidance**: Access standardized CPR and bleeding control instructions in **Kannada (ಕನ್ನಡ)**, **Hindi (हिंदी)**, and **English**, supported by voice narration (TTS) and an interactive **110 BPM CPR metronome**.
+   - **Emergency Dispatch Sharing**: Quickly send exact GPS coordinates and Google Maps links to family and trusted contacts via WhatsApp and SMS.
+
+2. **Community First Responders & Volunteers**:
+   - CPR-certified residents, Red Cross volunteers, NCC/NSS cadres, and trained Good Samaritans.
+   - Monitor a **1 km proximity radar** to detect nearby emergencies, accept responder alerts, and provide critical pre-hospital care before the ambulance arrives.
+
+3. **Hospital Emergency Departments & Trauma Desks**:
+   - Emergency Room (ER) nurses, triage officers, and trauma team coordinators.
+   - Receive simulated incoming patient payloads (`INC-2026-8901`) with real-time ETA estimates, enabling trauma bays to prepare equipment, blood, and medical teams before arrival.
+
+4. **Rural & Semi-Urban Communities**:
+   - Designed for regions facing prolonged ambulance response times and linguistic diversity.
+   - Lightweight, mobile-first design optimized for fast loading even on low-bandwidth connections, with client-side guidance that remains accessible during network dips.
+
+---
+
+## 📸 3. Application Screenshots
 
 All screenshots below represent the genuine application running locally:
 
@@ -43,7 +85,7 @@ All screenshots below represent the genuine application running locally:
 
 ---
 
-## 🏛️ 3. Technology Stack & Architecture
+## 🏛️ 4. Technology Stack & Architecture
 
 ```mermaid
 graph TD
@@ -66,7 +108,7 @@ graph TD
 
 ---
 
-## 🚀 4. Installation & Local Startup
+## 🚀 5. Installation & Local Startup
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (version 16.x or higher)
@@ -96,7 +138,7 @@ http://localhost:3000
 
 ---
 
-## 📡 5. API Reference
+## 📡 6. API Reference
 
 All API routes return JSON with `Content-Type: application/json; charset=UTF-8` and support configurable CORS.
 
@@ -146,7 +188,7 @@ All API routes return JSON with `Content-Type: application/json; charset=UTF-8` 
 
 ---
 
-## 🧪 6. Automated Testing & Verification
+## 🧪 7. Automated Testing & Verification
 
 GoldenHour includes an in-process acceptance and regression test suite with zero external test framework requirements:
 
@@ -182,7 +224,7 @@ node tests/api.test.js
 
 ---
 
-## 🗄️ 7. Database Persistence & Storage Architecture
+## 🗄️ 8. Database Persistence & Storage Architecture
 
 - **Active File**: [goldenhour_db.json](goldenhour_db.json)
 - **Backup File**: `goldenhour_db.json.bak` (automatically updated before modifications)
@@ -191,7 +233,7 @@ node tests/api.test.js
 
 ---
 
-## ⚕️ 8. Clinical Guidelines & Medical Attributions
+## ⚕️ 9. Clinical Guidelines & Medical Attributions
 
 All first-aid instructions adhere strictly to published Basic Life Support (BLS) protocols:
 - **Adult Cardiac Arrest & CPR**: Indian Resuscitation Council (IRC) Comprehensive Cardiopulmonary Life Support (CCLS) guidelines & European Resuscitation Council (ERC) BLS standards.
@@ -204,7 +246,7 @@ All first-aid instructions adhere strictly to published Basic Life Support (BLS)
 
 ---
 
-## 🔒 9. Privacy, Security & Third-Party Disclosures
+## 🔒 10. Privacy, Security & Third-Party Disclosures
 
 ### External Network Transmissions
 The application performs all logic and coordinate caching on the user's client device. The only external HTTP requests made are:
@@ -219,7 +261,7 @@ The application performs all logic and coordinate caching on the user's client d
 
 ---
 
-## ⚙️ 10. Environment Configuration
+## ⚙️ 11. Environment Configuration
 
 Copy the template to customize runtime behavior:
 
@@ -236,7 +278,7 @@ cp .env.example .env
 
 ---
 
-## 📄 11. License & Contributing
+## 📄 12. License & Contributing
 
 - **License**: Released under the [MIT License](LICENSE).
 - **Contributions**: Contributions and improvements are welcome! Please open an issue or submit a pull request on GitHub.
