@@ -88,22 +88,22 @@ const TRANSLATIONS = {
       {
         step: 1,
         title: "Check Responsiveness & Breathing",
-        desc: "Tap shoulders firmly and ask loudly 'Are you OK?'. Look at chest for 5-10 seconds to check for normal breathing."
+        desc: "Tap shoulders firmly and ask loudly 'Are you OK?'. Look at chest for 5-10 seconds to check for normal breathing. If unresponsive and not breathing normally (or only gasping), treat as cardiac arrest."
       },
       {
         step: 2,
         title: "Call 112 & Request AED",
-        desc: "Call 112 immediately or instruct a bystander to call 112 and get an Automated External Defibrillator (AED) if available."
+        desc: "Call 112 immediately or instruct a specific bystander to call 112 and fetch an Automated External Defibrillator (AED) if available."
       },
       {
         step: 3,
         title: "Chest Compressions (100-120 / min)",
-        desc: "Place heel of hand on center of chest. Interlock fingers. Push hard and fast 5-6 cm deep at the metronome beat. 30 compressions."
+        desc: "Place heel of hand on center of chest. Interlock fingers. Push hard and fast 5-6 cm deep at 110 BPM. Allow full chest recoil after each compression without leaning. 30 compressions."
       },
       {
         step: 4,
-        title: "Rescue Breaths & AED",
-        desc: "Give 2 rescue breaths if trained, then resume compressions immediately. Follow AED voice prompts when available."
+        title: "Rescue Breaths / Continuous Hands-Only",
+        desc: "Trained rescuers: 2 rescue breaths then resume compressions immediately. Untrained rescuers: provide continuous uninterrupted chest compressions (Hands-Only CPR). Follow AED voice prompts when available."
       }
     ],
 
@@ -114,33 +114,33 @@ const TRANSLATIONS = {
       {
         step: 1,
         title: "Direct Firm Pressure",
-        desc: "Apply firm, continuous direct pressure over the wound using a clean cloth or sterile bandage. Do not remove soaked cloths."
+        desc: "Apply firm, continuous direct pressure over the wound using a clean cloth or sterile bandage. Do not remove soaked cloths; add more dressings on top."
       },
       {
         step: 2,
         title: "Elevate & Keep Firm",
-        desc: "Keep the injured limb elevated above heart level if possible while keeping strong pressure."
+        desc: "Keep the injured limb elevated above heart level if possible (unless fracture suspected) while keeping strong pressure."
       },
       {
         step: 3,
         title: "Apply Pressure Bandage",
-        desc: "Wrap a bandage tightly over the dressing to maintain continuous pressure. Check pulse below bandage to avoid stopping circulation completely."
+        desc: "Wrap a bandage tightly over the dressing to maintain continuous pressure. Check pulse and extremities below bandage to avoid stopping circulation completely."
       },
       {
         step: 4,
         title: "Tourniquet for Severe Limb Bleeding",
-        desc: "If bleeding is life-threatening and uncontrolled, apply a tourniquet 5 cm above wound (not over joint). Note exact application time."
+        desc: "If life-threatening bleeding is uncontrolled by direct pressure, apply a tourniquet 5-7 cm above wound (never over a joint). Note exact application time. Never loosen or remove once applied; report time to 112."
       }
     ],
 
     // Recovery Position Guide
     recoveryTitle: "Recovery Position Guide",
-    recoveryDesc: "Unconscious victim who IS breathing normally.",
+    recoveryDesc: "Unconscious victim who IS breathing normally and has no suspected spinal trauma.",
     recoverySteps: [
       {
         step: 1,
         title: "Position Near Arm",
-        desc: "Kneel beside victim. Place closest arm at right angles to body, elbow bent with palm up."
+        desc: "Kneel beside victim. Place closest arm at right angles to body, elbow bent with palm facing up."
       },
       {
         step: 2,
@@ -154,8 +154,8 @@ const TRANSLATIONS = {
       },
       {
         step: 4,
-        title: "Open Airway & Monitor",
-        desc: "Tilt head back slightly to ensure airway remains open and fluid can drain. Monitor breathing until 112 arrives."
+        title: "Open Airway & Monitor Continuously",
+        desc: "Tilt head back gently to ensure airway remains open and fluid can drain. Monitor breathing continuously until 112 arrives. If breathing stops at any point, immediately roll onto back and start CPR!"
       }
     ],
 
@@ -260,22 +260,22 @@ const TRANSLATIONS = {
       {
         step: 1,
         title: "प्रतिक्रिया और सांस की जांच करें",
-        desc: "कंधों को जोर से थपथपाएं और पूछें 'क्या आप ठीक हैं?'। सामान्य सांस की जांच के लिए 5-10 सेकंड तक छाती को देखें।"
+        desc: "कंधों को जोर से थपथपाएं और पूछें 'क्या आप ठीक हैं?'। सामान्य सांस की जांच के लिए 5-10 सेकंड तक छाती को देखें। यदि कोई प्रतिक्रिया नहीं है और सांस असामान्य है (या केवल हांफ रहा है), तो इसे कार्डियक अरेस्ट मानें।"
       },
       {
         step: 2,
         title: "112 पर कॉल करें और एईडी मांगें",
-        desc: "तुरंत 112 पर कॉल करें या किसी राहगीर को 112 पर कॉल करने और एईडी लाने को कहें।"
+        desc: "तुरंत 112 पर कॉल करें या किसी व्यक्ति को 112 पर कॉल करने और एईडी (AED) लाने का स्पष्ट निर्देश दें।"
       },
       {
         step: 3,
         title: "छाती को दबाना (100-120 प्रति मिनट)",
-        desc: "हथेली के निचले हिस्से को छाती के बीच में रखें। उंगलियों को आपस में फंसाएं। मेट्रोनोम बीट पर 5-6 सेमी गहरा और तेजी से दबाएं। 30 बार दबाएं।"
+        desc: "हथेली के निचले हिस्से को छाती के बीच में रखें। उंगलियों को आपस में फंसाएं। मेट्रोनोम बीट पर 5-6 सेमी गहरा और तेजी से दबाएं। प्रत्येक दबाव के बाद छाती को पूरी तरह वापस आने दें। 30 बार दबाएं।"
       },
       {
         step: 4,
-        title: "कृत्रिम सांसें और एईडी",
-        desc: "यदि प्रशिक्षित हैं तो 2 बार मुंह से सांस दें, फिर तुरंत दबाना शुरू करें। उपलब्ध होने पर एईडी के निर्देशों का पालन करें।"
+        title: "कृत्रिम सांसें / हैंड्स-ओनली सीपीआर",
+        desc: "यदि प्रशिक्षित हैं तो 30 दबाव के बाद 2 बार सांस दें। यदि अप्रशिक्षित हैं, तो बिना रुके लगातार केवल छाती दबाते रहें (हैंड्स-ओनली सीपीआर)। एईडी उपलब्ध होने पर उसके निर्देशों का पालन करें।"
       }
     ],
 
@@ -285,12 +285,12 @@ const TRANSLATIONS = {
       {
         step: 1,
         title: "सीधा और तेज दबाव",
-        desc: "साफ कपड़े या बाँझ पट्टी का उपयोग करके घाव पर लगातार सीधा दबाव डालें। खून से सने कपड़े न हटाएं।"
+        desc: "साफ कपड़े या बाँझ पट्टी का उपयोग करके घाव पर लगातार सीधा दबाव डालें। खून से सने कपड़े न हटाएं; ऊपर से और कपड़ा रखें।"
       },
       {
         step: 2,
         title: "ऊँचा उठाएं और दबाव बनाए रखें",
-        desc: "मजबूत दबाव बनाए रखते हुए यदि संभव हो तो घायल अंग को दिल के स्तर से ऊपर उठाएं।"
+        desc: "यदि फ्रैक्चर का संदेह न हो, तो मजबूत दबाव बनाए रखते हुए घायल अंग को दिल के स्तर से ऊपर उठाएं।"
       },
       {
         step: 3,
@@ -300,12 +300,12 @@ const TRANSLATIONS = {
       {
         step: 4,
         title: "गंभीर रक्तस्राव के लिए टॉरनिक्वेट",
-        desc: "यदि रक्तस्राव जानलेवा है और नियंत्रित नहीं हो रहा है, तो घाव से 5 सेमी ऊपर (जोड़ के ऊपर नहीं) टॉरनिक्वेट लगाएं। सटीक समय नोट करें।"
+        desc: "यदि जानलेवा रक्तस्राव सीधे दबाव से नहीं रुक रहा, तो घाव से 5-7 सेमी ऊपर (जोड़ पर नहीं) टॉरनिक्वेट लगाएं। लगाने का समय नोट करें। इसे कभी ढीला न करें; 112 कर्मियों को समय बताएं।"
       }
     ],
 
     recoveryTitle: "रिकवरी स्थिति (Recovery Position) गाइड",
-    recoveryDesc: "बेहोश पीड़ित जो सामान्य रूप से सांस ले रहा है।",
+    recoveryDesc: "बेहोश पीड़ित जो सामान्य रूप से सांस ले रहा है (रीढ़ में चोट का संदेह न हो)।",
     recoverySteps: [
       {
         step: 1,
@@ -314,7 +314,7 @@ const TRANSLATIONS = {
       },
       {
         step: 2,
-        title: "दूसरे हाथ को मोड़ें",
+        title: "दूसरे हाथ को गाल पर रखें",
         desc: "उनके दूर वाले हाथ को छाती पर लाएं और हाथ के पिछले हिस्से को उनके पास वाले गाल से सटाकर रखें।"
       },
       {
@@ -324,8 +324,8 @@ const TRANSLATIONS = {
       },
       {
         step: 4,
-        title: "वायुमार्ग खोलें और निगरानी करें",
-        desc: "यह सुनिश्चित करने के लिए कि वायुमार्ग खुला रहे, सिर को थोड़ा पीछे झुकाएं। 112 के आने तक सांस लेने की निगरानी करें।"
+        title: "वायुमार्ग खोलें और निरंतर निगरानी करें",
+        desc: "वायुमार्ग खुला रखने के लिए सिर को धीरे से पीछे झुकाएं। 112 के आने तक लगातार निगरानी करें। यदि सांस बंद हो जाए, तो तुरंत पीठ के बल लिटाकर सीपीआर शुरू करें!"
       }
     ],
 
@@ -427,22 +427,22 @@ const TRANSLATIONS = {
       {
         step: 1,
         title: "ಪ್ರತಿಕ್ರಿಯೆ ಮತ್ತು ಉಸಿರಾಟ ಪರೀಕ್ಷಿಸಿ",
-        desc: "ಹೆಗಲನ್ನು ಗಟ್ಟಿಯಾಗಿ ತಟ್ಟಿ 'ನೀವು ಚೆನ್ನಾಗಿದ್ದೀರಾ?' ಎಂದು ಜೋರಾಗಿ ಕೇಳಿ. 5-10 ಸೆಕೆಂಡುಗಳ ಕಾಲ ಎದೆಯ ಚಲನೆಯನ್ನು ಗಮನಿಸಿ."
+        desc: "ಹೆಗಲನ್ನು ಗಟ್ಟಿಯಾಗಿ ತಟ್ಟಿ 'ನೀವು ಚೆನ್ನಾಗಿದ್ದೀರಾ?' ಎಂದು ಜೋರಾಗಿ ಕೇಳಿ. 5-10 ಸೆಕೆಂಡುಗಳ ಕಾಲ ಎದೆಯ ಚಲನೆಯನ್ನು ಗಮನಿಸಿ. ವ್ಯಕ್ತಿ ಸ್ಪಂದಿಸದಿದ್ದರೆ ಮತ್ತು ಸಹಜವಾಗಿ ಉಸಿರಾಡದಿದ್ದರೆ, ತಕ್ಷಣ ಸಿಪಿಆರ್ ಪ್ರಾರಂಭಿಸಿ."
       },
       {
         step: 2,
         title: "112 ಗೆ ಕರೆ ಮಾಡಿ & AED ತರಿಸಿಕೊಳ್ಳಿ",
-        desc: "ತಕ್ಷಣ 112 ಗೆ ಕರೆ ಮಾಡಿ ಅಥವಾ ಪಕ್ಕದಲ್ಲಿರುವವರಿಗೆ 112 ಗೆ ಕರೆ ಮಾಡಲು ಮತ್ತು AED ಸಾಧನ ತರಲು ಹೇಳಿ."
+        desc: "ತಕ್ಷಣ 112 ಗೆ ಕರೆ ಮಾಡಿ ಅಥವಾ ಪಕ್ಕದಲ್ಲಿರುವವರಿಗೆ 112 ಗೆ ಕರೆ ಮಾಡಲು ಮತ್ತು AED ಸಾಧನ ತರಲು ನೇರ ಸೂಚನೆ ನೀಡಿ."
       },
       {
         step: 3,
         title: "ಎದೆ ಒತ್ತುವುದು (ನಿಮಿಷಕ್ಕೆ 100-120 ಬಾರಿ)",
-        desc: "ಅಂಗೈ ಕೆಳಭಾಗವನ್ನು ಎದೆಯ ಮಧ್ಯದಲ್ಲಿಡಿ. ಬೆರಳುಗಳನ್ನು ಜೋಡಿಸಿ. ಮೆಟ್ರೊನೊಮ್ ವೇಗದಲ್ಲಿ 5-6 ಸೆಂ.ಮೀ ಆಳಕ್ಕೆ 30 ಬಾರಿ ವೇಗವಾಗಿ ಒತ್ತಿ."
+        desc: "ಅಂಗೈ ಕೆಳಭಾಗವನ್ನು ಎದೆಯ ಮಧ್ಯದಲ್ಲಿಡಿ. ಬೆರಳುಗಳನ್ನು ಜೋಡಿಸಿ. ಮೆಟ್ರೊನೊಮ್ ವೇಗದಲ್ಲಿ 5-6 ಸೆಂ.ಮೀ ಆಳಕ್ಕೆ 30 ಬಾರಿ ವೇಗವಾಗಿ ಒತ್ತಿ. ಪ್ರತಿ ಒತ್ತಡದ ನಂತರ ಎದೆ ಸಹಜ ಸ್ಥಿತಿಗೆ ಮರಳಲು ಬಿಡಿ."
       },
       {
         step: 4,
-        title: "ಕೃತಕ ಉಸಿರಾಟ ಮತ್ತು AED",
-        desc: "ತರಬೇತಿ ಪಡೆದಿದ್ದರೆ 2 ಬಾರಿ ಬಾಯಿಯಿಂದ ಉಸಿರು ನೀಡಿ, ನಂತರ ತಕ್ಷಣ ಒತ್ತುವುದನ್ನು ಮುಂದುವರಿಸಿ."
+        title: "ಕೃತಕ ಉಸಿರಾಟ / ನಿರಂತರ Hands-Only CPR",
+        desc: "ತರಬೇತಿ ಪಡೆದಿದ್ದರೆ 2 ಬಾರಿ ಬಾಯಿಯಿಂದ ಉಸಿರು ನೀಡಿ. ತರಬೇತಿ ಇಲ್ಲದಿದ್ದರೆ ನಿಲ್ಲಿಸದೆ ನಿರಂತರವಾಗಿ ಎದೆ ಒತ್ತುವುದನ್ನು ಮುಂದುವರಿಸಿ (Hands-Only CPR). AED ಬಂದ ತಕ್ಷಣ ಅದರ ಸೂಚನೆ ಪಾಲಿಸಿ."
       }
     ],
 
@@ -452,27 +452,27 @@ const TRANSLATIONS = {
       {
         step: 1,
         title: "ನೇರ ಗಟ್ಟಿ ಒತ್ತಡ",
-        desc: "ಶುದ್ಧ ಬಟ್ಟೆ ಅಥವಾ ಬ್ಯಾಂಡೇಜ್ ಬಳಸಿ ಗಾಯದ ಮೇಲೆ ನಿರಂತರ ನೇರ ಒತ್ತಡ ಹಾಕಿ. ರಕ್ತದಿಂದ ನೆನೆದ ಬಟ್ಟೆಯನ್ನು ತೆಗೆಯಬೇಡಿ."
+        desc: "ಶುದ್ಧ ಬಟ್ಟೆ ಅಥವಾ ಬ್ಯಾಂಡೇಜ್ ಬಳಸಿ ಗಾಯದ ಮೇಲೆ ನಿರಂತರ ನೇರ ಒತ್ತಡ ಹಾಕಿ. ರಕ್ತದಿಂದ ನೆನೆದ ಬಟ್ಟೆಯನ್ನು ತೆಗೆಯಬೇಡಿ; ಮೇಲೆಯೇ ಮತ್ತಷ್ಟು ಬಟ್ಟೆ ಇಡಿ."
       },
       {
         step: 2,
         title: "ಮೇಲಕ್ಕೆತ್ತಿ ಒತ್ತಡ ಕಾಯ್ದುಕೊಳ್ಳಿ",
-        desc: "ಸಾಧ್ಯವಿದ್ದಲ್ಲಿ ಗಾಯಗೊಂಡ ಭಾಗವನ್ನು ಹೃದಯದ ಮಟ್ಟಕ್ಕಿಂತ ಮೇಲಕ್ಕೆತ್ತಿ ಒತ್ತಡ ಮುಂದುವರಿಸಿ."
+        desc: "ಮೂಳೆ ಮುರಿತದ ಶಂಕೆ ಇಲ್ಲದಿದ್ದರೆ, ಗಾಯಗೊಂಡ ಭಾಗವನ್ನು ಹೃದಯದ ಮಟ್ಟಕ್ಕಿಂತ ಮೇಲಕ್ಕೆತ್ತಿ ಒತ್ತಡ ಮುಂದುವರಿಸಿ."
       },
       {
         step: 3,
         title: "ಪ್ರೆಷರ್ ಬ್ಯಾಂಡೇಜ್ ಕಟ್ಟಿ",
-        desc: "ಒತ್ತಡ ಕಾಯ್ದುಕೊಳ್ಳಲು ಬ್ಯಾಂಡೇಜ್‌ ಅನ್ನು ಬಿಗಿಯಾಗಿ ಸುತ್ತಿ."
+        desc: "ಒತ್ತಡ ಕಾಯ್ದುಕೊಳ್ಳಲು ಬ್ಯಾಂಡೇಜ್‌ ಅನ್ನು ಬಿಗಿಯಾಗಿ ಸುತ್ತಿ. ರಕ್ತ ಪರಿಚಲನೆ ಸಂಪೂರ್ಣ ನಿಲ್ಲದಂತೆ ನಾಡಿಯನ್ನು ಪರೀಕ್ಷಿಸಿ."
       },
       {
         step: 4,
         title: "ಟೂರ್ನಿಕೆಟ್ (Tourniquet) ಅಳವಡಿಕೆ",
-        desc: "ರಕ್ತಸ್ರಾವ ಜೀವಕ್ಕೆ ಅಪಾಯಕಾರಿಯಾಗಿದ್ದರೆ, ಗಾಯದಿಂದ 5 ಸೆಂ.ಮೀ ಮೇಲೆ ಟೂರ್ನಿಕೆಟ್ ಕಟ್ಟಿ. ಸಮಯವನ್ನು ಗುರುತಿಸಿ."
+        desc: "ರಕ್ತಸ್ರಾವ ಜೀವಕ್ಕೆ ಅಪಾಯಕಾರಿಯಾಗಿದ್ದು ನೇರ ಒತ್ತಡದಿಂದ ನಿಲ್ಲದಿದ್ದರೆ, ಗಾಯದಿಂದ 5-7 ಸೆಂ.ಮೀ ಮೇಲೆ ಟೂರ್ನಿಕೆಟ್ ಕಟ್ಟಿ. ಸಮಯವನ್ನು ಗುರುತಿಸಿ ಮತ್ತು ಸಡಿಲಗೊಳಿಸಬೇಡಿ; 112 ಸಿಬ್ಬಂದಿಗೆ ತಿಳಿಸಿ."
       }
     ],
 
     recoveryTitle: "ರಿಕವರಿ ಪೊಸಿಷನ್ (Recovery Position) ಮಾರ್ಗದರ್ಶಿ",
-    recoveryDesc: "ಉಸಿರಾಡುತ್ತಿರುವ ಆದರೆ ಪ್ರಜ್ಞಾಹೀನವಾಗಿರುವ ವ್ಯಕ್ತಿ.",
+    recoveryDesc: "ಉಸಿರಾಡುತ್ತಿರುವ ಆದರೆ ಪ್ರಜ್ಞಾಹೀನವಾಗಿರುವ ವ್ಯಕ್ತಿ (ಬೆನ್ನು ಅಥವಾ ಕುತ್ತಿಗೆಯ ಗಾಯದ ಶಂಕೆ ಇಲ್ಲದಿದ್ದಾಗ).",
     recoverySteps: [
       {
         step: 1,
@@ -482,7 +482,7 @@ const TRANSLATIONS = {
       {
         step: 2,
         title: "ಮತ್ತೊಂದು ಕೈ ಜೋಡಣೆ",
-        desc: "ಅವರ ದೂರದ ಕೈಯನ್ನು ಎದೆಯ ಅಡ್ಡಲಾಗಿ ತಂದು ಕೆನ್ನೆಯ ಭಾಗದಲ್ಲಿಡಿ."
+        desc: "ಅವರ ದೂರದ ಕೈಯನ್ನು ಎದೆಯ ಅಡ್ಡಲಾಗಿ ತಂದು ಕೆನ್ನೆಯ ಭಾಗದಲ್ಲಿ ಹಿಡಿದುಕೊಳ್ಳಿ."
       },
       {
         step: 3,
@@ -491,8 +491,8 @@ const TRANSLATIONS = {
       },
       {
         step: 4,
-        title: "ಉಸಿರಾಟದ ಹಾದಿ ತೆರೆಯಿರಿ",
-        desc: "ಉಸಿರಾಟದ ಹಾದಿ ತೆರೆದಿರಲು ತಲೆಯನ್ನು ಕೊಂಚ ಹಿಂದಕ್ಕೆ ಬಾಗಿಸಿ. 112 ಬರುವವರೆಗೆ ಗಮನಿಸಿ."
+        title: "ಉಸಿರಾಟದ ಹಾದಿ ತೆರೆಯಿರಿ & ನಿರಂತರ ಗಮನಿಸಿ",
+        desc: "ಉಸಿರಾಟದ ಹಾದಿ ತೆರೆದಿರಲು ತಲೆಯನ್ನು ಕೊಂಚ ಹಿಂದಕ್ಕೆ ಬಾಗಿಸಿ. 112 ಬರುವವರೆಗೆ ಗಮನಿಸಿ. ಉಸಿರಾಟ ನಿಂತರೆ ತಕ್ಷಣ ಬೆನ್ನ ಮೇಲೆ ಮಲಗಿಸಿ ಸಿಪಿಆರ್ ಪ್ರಾರಂಭಿಸಿ!"
       }
     ],
 
