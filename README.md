@@ -494,16 +494,18 @@ node --env-file=.env server.js
 
 ## 13. Automated Testing & Verified Results
 
-The repository features an in-process acceptance and regression test suite in [`tests/api.test.js`](tests/api.test.js). It executes using Node's standard `assert` module without third-party test runners.
+The repository features an in-process acceptance, security, and clinical invariant test suite in [`tests/`](tests/). It executes using Node's standard `assert` module without third-party test runners or external dependencies.
 
 ### Running Tests
 ```bash
 npm test
-# OR directly:
+# OR individually:
 node tests/api.test.js
+node tests/security.test.js
+node tests/frontend_safety.test.js
 ```
 
-### Verified Test Results (12/12 Passed)
+### Verified Test Results (34/34 Passed)
 ```text
 ===============================================================
 🧪 Running GoldenHour Final Release Readiness Regression Tests
@@ -520,11 +522,51 @@ node tests/api.test.js
 ✅ Passed (9): T9: getIncidentById returns record for valid ID, undefined for invalid
 ✅ Passed (10): T10: Atomic save writes temporary file and protects main database file
 ✅ Passed (11): T11: Concurrent rapid saves do not corrupt JSON file
-✅ Passed (12): T12: Direct 112 emergency dialer constraint strictly maintained
+✅ Passed (12): T12: Direct 112 emergency dialer constraint strictly maintained in HTML markup
+✅ Passed (13): T13: Duplicate incident ID insertion is prevented idempotently
+✅ Passed (14): T14: Corrupted primary file automatically recovers from healthy backup
 
 ===============================================================
-🎉 ALL 12/12 REGRESSION & ACCEPTANCE TESTS PASSED!
-GoldenHour meets all safety, validation, and persistence standards.
+🎉 ALL 14/14 REGRESSION & ACCEPTANCE TESTS PASSED!
+===============================================================
+
+===============================================================
+🔒 Running GoldenHour Security & API Hardening Test Suite
+===============================================================
+
+✅ Passed (1): S1: Security headers present on API responses
+✅ Passed (2): S2: CORS OPTIONS Preflight returns 204 with methods and origin
+✅ Passed (3): S3: Request payloads > 100KB rejected with HTTP 413 Payload Too Large
+✅ Passed (4): S4: Malformed JSON request bodies rejected with HTTP 400
+✅ Passed (5): S5: Non-existent /api/* routes return JSON 404, never index.html
+✅ Passed (6): S6: Unsupported HTTP methods on API routes return HTTP 405 Method Not Allowed
+✅ Passed (7): S7: Direct access to server.js is blocked with HTTP 403
+✅ Passed (8): S8: Direct access to database file goldenhour_db.json is blocked with HTTP 403
+✅ Passed (9): S9: Direct access to package.json is blocked with HTTP 403
+✅ Passed (10): S10: Directory traversal attempts (../) blocked with HTTP 403
+✅ Passed (11): S11: Input sanitizer strips direct HTML tag brackets to prevent stored XSS
+✅ Passed (12): S12: /api/test-run endpoint is blocked in production (NODE_ENV=production)
+
+===============================================================
+🎉 ALL 12/12 SECURITY & HARDENING TESTS PASSED!
+===============================================================
+
+===============================================================
+🛡️ Running GoldenHour Frontend Safety & Clinical Invariant Tests
+===============================================================
+
+✅ Passed (1): FS1: HTML escaping helper properly escapes dangerous characters (&, <, >, ", ')
+✅ Passed (2): FS2: Direct 112 emergency dialer constraint strictly maintained in HTML markup
+✅ Passed (3): FS3: Emergency contact validation accepts valid entries and rejects invalid formats
+✅ Passed (4): FS4: Emergency message generator suppresses coordinates when location sharing is paused
+✅ Passed (5): FS5: Emergency message generator does NOT send fallback coordinates when GPS permission is denied
+✅ Passed (6): FS6: CPR Metronome calculates correct 110 BPM timing interval (~545ms) and 30-compression cycle
+✅ Passed (7): FS7: Simulation disclaimer banners exist in mock hospital, volunteer, and first-aid modules
+✅ Passed (8): FS8: Multilingual translation dictionaries (en, hi, kn) have full key parity for clinical guides
+
+===============================================================
+🎉 ALL 8/8 FRONTEND & CLINICAL INVARIANT TESTS PASSED!
+Total Verified Passing Tests: 34 / 34
 ===============================================================
 ```
 
