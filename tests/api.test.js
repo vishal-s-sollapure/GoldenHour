@@ -1,7 +1,7 @@
 /**
  * GoldenHour — Comprehensive Acceptance & Regression Test Suite
- * Tests database operations, input validation, concurrency safety,
- * simulated workflows, and transparent non-dispatch rules.
+ * Fully isolated execution: Operates on a dedicated temporary test database
+ * to guarantee that production datastore (goldenhour_db.json) is never contaminated.
  *
  * Runs in-process with zero external test runners:
  * Command: node tests/api.test.js
@@ -10,6 +10,11 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+
+// Configure isolated test database BEFORE loading database modules
+const TEST_DB_PATH = path.join(__dirname, 'test_goldenhour_db.json');
+process.env.DB_FILE = TEST_DB_PATH;
+
 const db = require('../src/db/database');
 const incidentService = require('../src/services/incident-service');
 const { validateIncidentCreation, validateEventCreation } = require('../src/middleware/validation');
@@ -132,10 +137,9 @@ try {
   // Test 10: Atomic Persistence & Recovery from Backup
   runTest('T10: Atomic save writes temporary file and protects main database file', () => {
     db.save();
-    const dbPath = path.join(__dirname, '../goldenhour_db.json');
-    assert(fs.existsSync(dbPath), 'Primary database file must exist');
+    assert(fs.existsSync(TEST_DB_PATH), 'Test database file must exist');
 
-    const content = fs.readFileSync(dbPath, 'utf8');
+    const content = fs.readFileSync(TEST_DB_PATH, 'utf8');
     const parsed = JSON.parse(content);
     assert(Array.isArray(parsed.incidents), 'Saved JSON must parse as valid object');
   });
@@ -159,10 +163,62 @@ try {
     assert(reloaded.incidents.length >= 10, 'All stress test incidents must be preserved');
   });
 
-  // Test 12: Priority Call Integrity Check
-  runTest('T12: Direct 112 emergency dialer constraint strictly maintained', () => {
-    const callNumber = '112';
-    assert.strictEqual(callNumber, '112', 'Emergency dialer target must remain 112');
+  // Test 12: Priority Call Invariant (Inspecting Real HTML Dialers)
+  runTest('T12: Direct 112 emergency dialer constraint strictly maintained in HTML markup', () => {
+    const indexHtml = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+    const firstAidHtml = fs.readFileSync(path.join(__dirname, '../first-aid.html'), 'utf8');
+
+    assert(indexHtml.includes('href="tel:112"') || indexHtml.includes("'tel:112'"), 'index.html must feature unblocked tel:112 dialer link');
+    assert(firstAidHtml.includes('112'), 'first-aid.html must prominently reinforce calling 112');
+  });
+
+  // Test 13: Duplicate Incident Prevention & Idempotency
+  runTest('T13: Duplicate incident ID insertion is prevented idempotently', () => {
+    const originalCount = db.getIncidents().length;
+    const dupIncident = {
+      id: createdIncident.id,
+      status: 'ACTIVE',
+      language: 'hi',
+      location_lat: 13.0,
+      location_lng: 77.0,
+      location_address: 'Duplicate Attempt',
+      created_at: new Date().toISOString()
+    };
+    const result = db.createIncident(dupIncident);
+    assert.strictEqual(result.id, createdIncident.id);
+    assert.strictEqual(db.getIncidents().length, originalCount, 'Duplicate ID must not increase incident count');
+  });
+
+  // Test 14: Disaster Recovery from Backup File
+  runTest('T14: Corrupted primary file automatically recovers from healthy backup', () => {
+    const { GoldenHourDB } = db;
+    const corruptTestPath = path.join(__dirname, 'corrupt_test_db.json');
+    const corruptBakPath = `${corruptTestPath}.bak`;
+
+    try {
+      // 1. Create a healthy backup file
+      const healthyData = {
+        incidents: [{ id: 'INC-RECOVERED-01', status: 'ACTIVE', language: 'en', created_at: new Date().toISOString() }],
+        incident_events: [],
+        demo_volunteers: [{ id: 1, display_name: 'Dr. Backup', demo_only: 1 }],
+        demo_alerts: [],
+        demo_hospitals: []
+      };
+      fs.writeFileSync(corruptBakPath, JSON.stringify(healthyData), 'utf8');
+
+      // 2. Create a corrupted/broken primary file
+      fs.writeFileSync(corruptTestPath, '{{{ corrupt JSON payload', 'utf8');
+
+      // 3. Initialize engine on the corrupted file
+      const recoveryDb = new GoldenHourDB(corruptTestPath);
+      const loadedIncidents = recoveryDb.getIncidents();
+
+      assert(Array.isArray(loadedIncidents), 'Recovered incidents must be array');
+      assert.strictEqual(loadedIncidents[0].id, 'INC-RECOVERED-01', 'Should recover data from healthy .bak file');
+    } finally {
+      if (fs.existsSync(corruptTestPath)) fs.unlinkSync(corruptTestPath);
+      if (fs.existsSync(corruptBakPath)) fs.unlinkSync(corruptBakPath);
+    }
   });
 
   console.log('\n===============================================================');
@@ -173,4 +229,11 @@ try {
 } catch (e) {
   console.error('\n❌ Test Suite Aborted due to failure.');
   process.exit(1);
+} finally {
+  // Clean up isolated test database files so workspace remains pristine
+  try {
+    if (fs.existsSync(TEST_DB_PATH)) fs.unlinkSync(TEST_DB_PATH);
+    const bakPath = `${TEST_DB_PATH}.bak`;
+    if (fs.existsSync(bakPath)) fs.unlinkSync(bakPath);
+  } catch (_) {}
 }
