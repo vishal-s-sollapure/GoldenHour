@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node tests/api.test.js && node tests/security.test.js"
+    "test": "node tests/api.test.js && node tests/security.test.js && node tests/frontend_safety.test.js"
   },
   "keywords": [
     "emergency",
