@@ -125,6 +125,16 @@
   </main>
 
   <script>
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function loadIncidents() {
       fetch('/api/incidents')
         .then(res => res.json())
@@ -134,11 +144,11 @@
             if (tbody) {
               tbody.innerHTML = data.incidents.map(inc => `
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
-                  <td style="padding: 10px; font-weight: 700; color: #FF3B30;">${inc.id}</td>
-                  <td style="padding: 10px;"><span style="color: #34C759;">${inc.status}</span></td>
-                  <td style="padding: 10px;">${inc.language}</td>
-                  <td style="padding: 10px;">${inc.location_address || 'GPS Coordinates'}</td>
-                  <td style="padding: 10px;">${new Date(inc.created_at).toLocaleTimeString()}</td>
+                  <td style="padding: 10px; font-weight: 700; color: #FF3B30;">${escapeHtml(inc.id)}</td>
+                  <td style="padding: 10px;"><span style="color: #34C759;">${escapeHtml(inc.status)}</span></td>
+                  <td style="padding: 10px;">${escapeHtml(inc.language)}</td>
+                  <td style="padding: 10px;">${escapeHtml(inc.location_address || 'GPS Coordinates')}</td>
+                  <td style="padding: 10px;">${escapeHtml(new Date(inc.created_at).toLocaleTimeString())}</td>
                 </tr>
               `).join('');
             }

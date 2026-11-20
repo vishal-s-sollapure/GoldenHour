@@ -4,21 +4,57 @@
  * Multilingual UI Renderer, & Web Speech Synthesis (TTS) Engine.
  */
 
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+const DEFAULT_CONTACTS = [
+  { name: 'Family Member', phone: '+919876543210' },
+  { name: 'Emergency Doctor', phone: '+919812345678' }
+];
+
+function loadSavedContacts() {
+  try {
+    const raw = localStorage.getItem('goldenhour_contacts');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.filter(c => c && typeof c.name === 'string' && typeof c.phone === 'string');
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to parse saved contacts from localStorage:', e);
+  }
+  return DEFAULT_CONTACTS;
+}
+
+function saveContactsToStorage(contacts) {
+  try {
+    localStorage.setItem('goldenhour_contacts', JSON.stringify(contacts));
+  } catch (e) {
+    console.warn('Failed to save contacts to localStorage:', e);
+  }
+}
+
 // Application State
 const state = {
   currentLang: 'en', // 'en', 'hi', 'kn'
   userLocation: {
-    lat: 12.9716, // Default Bengaluru coordinates
+    lat: 12.9716, // Default Bengaluru coordinates (fallback)
     lng: 77.5946,
     accuracy: null,
-    address: 'Bengaluru, Karnataka, India',
+    address: 'Bengaluru, Karnataka, India (Default Coordinates)',
     isSharing: true,
-    permission: 'pending'
+    permission: 'pending',
+    isManual: false
   },
-  contacts: [
-    { name: 'Family Member', phone: '+919876543210' },
-    { name: 'Emergency Doctor', phone: '+919812345678' }
-  ],
+  contacts: loadSavedContacts(),
   sosActive: false,
   map: null,
   marker: null,
@@ -130,7 +166,7 @@ function setupEmergencyCallBtn() {
   if (callBtn) {
     callBtn.addEventListener('click', () => {
       if (window.metricsEngine) {
-        window.metricsEngine.recordAction('Called 112 Emergency');
+        window.metricsEngine.recordAction('Opened 112 Dialer (tel:112)');
       }
       window.location.href = 'tel:112';
     });
@@ -248,11 +284,14 @@ function setEmergencyLocation(lat, lng, source = 'manual') {
 
   if (source === 'gps') {
     state.userLocation.permission = 'granted';
+    state.userLocation.isManual = false;
     if (locStatusEl) locStatusEl.textContent = `🟢 Live GPS Active: ${lat.toFixed(4)}, ${lng.toFixed(4)} (±${state.userLocation.accuracy || 15}m)`;
     if (tipEl) tipEl.style.display = 'none';
   } else if (source === 'search') {
+    state.userLocation.isManual = true;
     if (locStatusEl) locStatusEl.textContent = `📍 Searched Location Set: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
   } else {
+    state.userLocation.isManual = true;
     if (locStatusEl) locStatusEl.textContent = `📍 Manually Pinned Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
   }
 
@@ -472,12 +511,18 @@ function setupLocationSharing() {
           statusEl.textContent = '🟢 Sharing Active';
           statusEl.style.color = '#34C759';
         }
+        if (state.marker) {
+          state.marker.setOpacity(1.0);
+        }
       } else {
         toggleBtn.textContent = 'Resume Location Sharing';
         toggleBtn.className = 'btn btn-outline-warning btn-sm';
         if (statusEl) {
           statusEl.textContent = '🟡 Sharing Paused';
           statusEl.style.color = '#FF9500';
+        }
+        if (state.marker) {
+          state.marker.setOpacity(0.4);
         }
       }
     });
@@ -491,12 +536,27 @@ function setupContacts() {
   const addBtn = document.getElementById('addContactBtn');
   if (addBtn) {
     addBtn.addEventListener('click', () => {
-      const name = prompt('Enter Contact Name:');
-      const phone = prompt('Enter Phone Number (with country code, e.g. +91...):');
-      if (name && phone) {
-        state.contacts.push({ name, phone });
-        renderContactsList();
+      const rawName = prompt('Enter Contact Name (at least 2 characters):');
+      if (!rawName) return;
+      const name = rawName.trim();
+      if (name.length < 2 || name.length > 60) {
+        alert('Invalid name. Please enter between 2 and 60 characters.');
+        return;
       }
+
+      const rawPhone = prompt('Enter Phone Number (with country code, e.g. +919876543210):');
+      if (!rawPhone) return;
+      const phone = rawPhone.trim();
+      const cleanedPhone = phone.replace(/[\s\-()]/g, '');
+      const phoneRegex = /^\+?[0-9]{8,15}$/;
+      if (!phoneRegex.test(cleanedPhone)) {
+        alert('Invalid phone format. Please enter a valid telephone number (8-15 digits, e.g., +919876543210).');
+        return;
+      }
+
+      state.contacts.push({ name, phone: cleanedPhone });
+      saveContactsToStorage(state.contacts);
+      renderContactsList();
     });
   }
 
@@ -515,31 +575,58 @@ function renderContactsList() {
   const container = document.getElementById('contactsList');
   if (!container) return;
 
+  if (state.contacts.length === 0) {
+    container.innerHTML = '<div class="text-muted" style="padding: 10px; font-size: 0.9rem;">No emergency contacts added yet. Click &quot;+ Add Contact&quot; to configure trusted responders.</div>';
+    return;
+  }
+
   container.innerHTML = state.contacts.map((c, i) => `
     <div class="contact-card">
       <div>
-        <strong>${c.name}</strong>
-        <div class="text-muted">${c.phone}</div>
+        <strong>${escapeHtml(c.name)}</strong>
+        <div class="text-muted">${escapeHtml(c.phone)}</div>
       </div>
-      <button class="btn btn-sm btn-outline-danger" onclick="removeContact(${i})">Remove</button>
+      <button class="btn btn-sm btn-outline-danger" onclick="removeContact(${i})" aria-label="Remove ${escapeHtml(c.name)}">Remove</button>
     </div>
   `).join('');
 }
 
 window.removeContact = function(index) {
-  state.contacts.splice(index, 1);
-  renderContactsList();
+  if (index >= 0 && index < state.contacts.length) {
+    state.contacts.splice(index, 1);
+    saveContactsToStorage(state.contacts);
+    renderContactsList();
+  }
 };
 
 function shareEmergencyMessage(platform) {
-  const locStr = `https://maps.google.com/?q=${state.userLocation.lat},${state.userLocation.lng}`;
-  const msg = `EMERGENCY ALERT from GoldenHour!\nI need immediate assistance.\nMy Location: ${locStr}\nAddress: ${state.userLocation.address}\nPlease send help or call 112!`;
+  let locationDetails = '';
+
+  if (!state.userLocation.isSharing) {
+    locationDetails = 'Location Sharing: PAUSED BY USER (GPS coordinates suppressed for privacy).\nPlease contact caller directly to determine location.';
+  } else if (state.userLocation.permission === 'granted' || state.userLocation.isManual) {
+    const lat = state.userLocation.lat;
+    const lng = state.userLocation.lng;
+    const mapsUrl = `https://maps.google.com/?q=${lat},${lng}`;
+    locationDetails = `My Location: ${mapsUrl}\nAddress: ${state.userLocation.address || 'GPS Coordinates'}`;
+  } else {
+    locationDetails = 'GPS Status: NOT DETECTED (Device location permission not granted or unavailable).\nPlease verify position manually with the caller.';
+  }
+
+  const msg = `EMERGENCY ALERT from GoldenHour!\nI need immediate assistance.\n${locationDetails}\nPlease send help or call 112!`;
 
   if (platform === 'sms') {
-    const phones = state.contacts.map(c => c.phone).join(',');
+    if (state.contacts.length === 0) {
+      alert('Please add at least one emergency contact before sending an SMS alert.');
+      return;
+    }
+    const phones = state.contacts
+      .map(c => c.phone.replace(/[^0-9+]/g, ''))
+      .filter(Boolean)
+      .join(',');
     window.location.href = `sms:${phones}?body=${encodeURIComponent(msg)}`;
   } else if (platform === 'whatsapp') {
-    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
   }
 
   if (window.metricsEngine) {

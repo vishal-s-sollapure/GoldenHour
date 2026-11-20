@@ -4,6 +4,16 @@
  * victim info, and estimated arrival details before arrival.
  */
 
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 class HospitalEngine {
   constructor() {
     this.incomingAlerts = [
@@ -41,34 +51,34 @@ class HospitalEngine {
           ${this.incomingAlerts.map(inc => `
             <div class="incident-payload-card ${inc.status === 'ACKNOWLEDGED' ? 'ack-card' : ''}">
               <div class="inc-header">
-                <span class="inc-id">${inc.id}</span>
-                <span class="inc-type-tag">${inc.type}</span>
-                <span class="inc-time">${inc.timestamp}</span>
+                <span class="inc-id">${escapeHtml(inc.id)}</span>
+                <span class="inc-type-tag">${escapeHtml(inc.type)}</span>
+                <span class="inc-time">${escapeHtml(inc.timestamp)}</span>
               </div>
 
               <div class="inc-body-grid">
                 <div>
                   <strong>📍 Incident Location:</strong>
-                  <div>${inc.location} (${inc.coords})</div>
+                  <div>${escapeHtml(inc.location)} (${escapeHtml(inc.coords)})</div>
                 </div>
 
                 <div>
                   <strong>⏱ Estimated Arrival (ETA):</strong>
-                  <div class="eta-highlight">${inc.eta}</div>
+                  <div class="eta-highlight">${escapeHtml(inc.eta)}</div>
                 </div>
 
                 <div class="inc-full-width">
                   <strong>ℹ️ Bystander Pre-Hospital Actions:</strong>
-                  <div>${inc.bystanderActions}</div>
+                  <div>${escapeHtml(inc.bystanderActions)}</div>
                 </div>
               </div>
 
               <div class="inc-actions">
                 ${inc.status === 'PENDING_ACKNOWLEDGEMENT' ? `
-                  <button class="btn btn-success btn-sm" onclick="window.hospitalEngine.acknowledgeIncident('${inc.id}')">
+                  <button class="btn btn-success btn-sm" onclick="window.hospitalEngine.acknowledgeIncident('${escapeHtml(inc.id)}')">
                     ✅ Acknowledge & Prepare Trauma Bay 1
                   </button>
-                  <button class="btn btn-outline-light btn-sm" onclick="window.hospitalEngine.dispatchHospitalAmbulance('${inc.id}')">
+                  <button class="btn btn-outline-light btn-sm" onclick="window.hospitalEngine.dispatchHospitalAmbulance('${escapeHtml(inc.id)}')">
                     🚑 Simulate Pre-Alert Dispatch (Demo Only — Not a Real Dispatch)
                   </button>
                 ` : `
