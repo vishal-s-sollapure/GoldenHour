@@ -142,8 +142,17 @@ class GoldenHourDB {
         } catch (_) {}
       }
 
-      // Atomically replace DB file
-      fs.renameSync(tempFile, this.dbFile);
+      // Atomically replace DB file with Windows EPERM / contention fallback
+      try {
+        fs.renameSync(tempFile, this.dbFile);
+      } catch (renameErr) {
+        if (renameErr.code === 'EPERM' || renameErr.code === 'EBUSY') {
+          fs.copyFileSync(tempFile, this.dbFile);
+          try { fs.unlinkSync(tempFile); } catch (_) {}
+        } else {
+          throw renameErr;
+        }
+      }
     } catch (err) {
       console.error(`[GoldenHourDB] Failed to write database file atomically (${this.dbFile}):`, err.message);
       try {
