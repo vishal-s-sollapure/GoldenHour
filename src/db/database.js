@@ -1,14 +1,18 @@
 /**
  * GoldenHour — Database Layer
  * Provides persistent storage for incidents, event logs, demo volunteers, and hospital alerts.
- * Features automatic file persistence in goldenhour_db.json so that test data
- * survives server restarts, meeting the Blueprint acceptance criteria.
+ * Features atomic file replacement (.tmp -> renameSync) and backup recovery (.bak).
+ * Configurable via process.env.DB_FILE or constructor for complete test isolation.
  */
 
 const fs = require('fs');
 const path = require('path');
 
-const DB_FILE = path.join(__dirname, '../../goldenhour_db.json');
+function resolveDbPath(customPath) {
+  if (customPath) return path.resolve(customPath);
+  if (process.env.DB_FILE) return path.resolve(process.env.DB_FILE);
+  return path.join(__dirname, '../../goldenhour_db.json');
+}
 
 // Default initial database state with synthetic demo records
 const defaultState = {
@@ -73,68 +77,82 @@ const defaultState = {
 };
 
 class GoldenHourDB {
-  constructor() {
+  constructor(customPath = null) {
+    this.dbFile = resolveDbPath(customPath);
+    this.bakFile = `${this.dbFile}.bak`;
     this.data = this.load();
   }
 
   load() {
     // 1. Try reading primary database file
     try {
-      if (fs.existsSync(DB_FILE)) {
-        const raw = fs.readFileSync(DB_FILE, 'utf8');
-        return JSON.parse(raw);
+      if (fs.existsSync(this.dbFile)) {
+        const raw = fs.readFileSync(this.dbFile, 'utf8');
+        if (raw && raw.trim().length > 0) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.incidents)) {
+            return parsed;
+          }
+        }
       }
     } catch (err) {
-      console.warn('Primary database file corrupted or unreadable. Checking backup...', err.message);
+      console.warn(`[GoldenHourDB] Primary file (${this.dbFile}) unreadable or corrupted: ${err.message}. Checking backup...`);
     }
 
     // 2. Try recovering from backup file if primary failed
-    const bakFile = `${DB_FILE}.bak`;
     try {
-      if (fs.existsSync(bakFile)) {
-        const rawBak = fs.readFileSync(bakFile, 'utf8');
-        const recovered = JSON.parse(rawBak);
-        console.log('Successfully recovered database from backup file.');
-        this.save(recovered);
-        return recovered;
+      if (fs.existsSync(this.bakFile)) {
+        const rawBak = fs.readFileSync(this.bakFile, 'utf8');
+        if (rawBak && rawBak.trim().length > 0) {
+          const recovered = JSON.parse(rawBak);
+          if (recovered && Array.isArray(recovered.incidents)) {
+            console.log(`[GoldenHourDB] Successfully recovered database from backup: ${this.bakFile}`);
+            this.save(recovered);
+            return recovered;
+          }
+        }
       }
     } catch (bakErr) {
-      console.warn('Backup file also unreadable, falling back to defaults:', bakErr.message);
+      console.warn(`[GoldenHourDB] Backup file also unreadable (${bakErr.message}), falling back to clean default state.`);
     }
 
-    // 3. Fall back to clean default state
-    this.save(defaultState);
-    return JSON.parse(JSON.stringify(defaultState));
+    // 3. Fall back to clean initial state
+    const freshState = JSON.parse(JSON.stringify(defaultState));
+    this.save(freshState);
+    return freshState;
   }
 
   save(dataToSave) {
     const data = dataToSave || this.data;
-    const tempFile = `${DB_FILE}.tmp.${Date.now()}.${Math.floor(Math.random() * 1000)}`;
-    const bakFile = `${DB_FILE}.bak`;
+    const tempFile = `${this.dbFile}.tmp.${Date.now()}.${Math.floor(Math.random() * 1000)}`;
 
     try {
       const jsonString = JSON.stringify(data, null, 2);
-      // Write to temp file first
+
+      // Write complete payload to temp file first
       fs.writeFileSync(tempFile, jsonString, 'utf8');
 
-      // Create backup of existing file before replacement
-      if (fs.existsSync(DB_FILE)) {
+      // Create backup of existing file only if it is non-empty (> 10 bytes)
+      if (fs.existsSync(this.dbFile)) {
         try {
-          fs.copyFileSync(DB_FILE, bakFile);
+          const stat = fs.statSync(this.dbFile);
+          if (stat.size > 10) {
+            fs.copyFileSync(this.dbFile, this.bakFile);
+          }
         } catch (_) {}
       }
 
       // Atomically replace DB file
-      fs.renameSync(tempFile, DB_FILE);
+      fs.renameSync(tempFile, this.dbFile);
     } catch (err) {
-      console.error('Failed to write database file atomically:', err.message);
+      console.error(`[GoldenHourDB] Failed to write database file atomically (${this.dbFile}):`, err.message);
       try {
         if (fs.existsSync(tempFile)) fs.unlinkSync(tempFile);
       } catch (_) {}
     }
   }
 
-  // Incidents
+  // Incidents Management
   getIncidents() {
     return this.data.incidents;
   }
@@ -144,14 +162,26 @@ class GoldenHourDB {
   }
 
   createIncident(incident) {
+    if (!incident || typeof incident !== 'object' || !incident.id) {
+      throw new Error('Invalid incident: Incident must be an object with an ID');
+    }
+
+    // Duplicate Prevention (Idempotency)
+    const existing = this.data.incidents.find(i => i.id === incident.id);
+    if (existing) {
+      return existing;
+    }
+
     this.data.incidents.unshift(incident);
     this.save();
     return incident;
   }
 
-  // Events
+  // Event Logging (Chronological)
   getEventsByIncidentId(incidentId) {
-    return this.data.incident_events.filter(e => e.incident_id === incidentId);
+    return this.data.incident_events
+      .filter(e => e.incident_id === incidentId)
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   }
 
   getAllEvents() {
@@ -159,9 +189,21 @@ class GoldenHourDB {
   }
 
   addEvent(event) {
-    this.data.incident_events.unshift(event);
+    if (!event || typeof event !== 'object' || !event.event_type) {
+      throw new Error('Invalid event: Event must be an object with an event_type');
+    }
+
+    const newEvent = {
+      id: event.id || `EVT-${Date.now()}`,
+      incident_id: event.incident_id,
+      event_type: event.event_type,
+      details: event.details || '',
+      created_at: event.created_at || new Date().toISOString()
+    };
+
+    this.data.incident_events.unshift(newEvent);
     this.save();
-    return event;
+    return newEvent;
   }
 
   // Demo Volunteers
@@ -184,6 +226,9 @@ class GoldenHourDB {
   }
 
   createAlert(alert) {
+    if (!alert || typeof alert !== 'object' || !alert.id) {
+      throw new Error('Invalid alert: Alert must be an object with an ID');
+    }
     this.data.demo_alerts.unshift(alert);
     this.save();
     return alert;
@@ -204,4 +249,6 @@ class GoldenHourDB {
   }
 }
 
-module.exports = new GoldenHourDB();
+const defaultInstance = new GoldenHourDB();
+defaultInstance.GoldenHourDB = GoldenHourDB;
+module.exports = defaultInstance;
