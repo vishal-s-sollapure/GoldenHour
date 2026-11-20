@@ -19,7 +19,7 @@
 - [1. Introduction & Problem Statement](#-1-introduction--problem-statement)
 - [2. Who Can Use It? (Target Users)](#-2-who-can-use-it-target-users)
 - [3. Application Screenshots](#-3-application-screenshots)
-- [4. Technology Stack & Architecture](#-4-technology-stack--architecture)
+- [4. Technology Stack, Architecture & Workflows](#-4-technology-stack-architecture--workflows)
 - [5. Installation & Local Startup](#-5-installation--local-startup)
 - [6. API Reference](#-6-api-reference)
 - [7. Automated Testing & Verification](#-7-automated-testing--verification)
@@ -85,7 +85,7 @@ All screenshots below represent the genuine application running locally:
 
 ---
 
-## 🏛️ 4. Technology Stack & Architecture
+## 🏛️ 4. Technology Stack, Architecture & Workflows
 
 ```mermaid
 graph TD
@@ -98,7 +98,72 @@ graph TD
     DB -.->|Schema Reference| SQL["Relational SQLite Schema<br/>src/db/schema.sql"]
 ```
 
-### Components
+### 📁 Repository Directory Structure
+```text
+GoldenHour/
+├── index.html                  # Main emergency SOS dashboard & location dispatcher
+├── first-aid.html              # Trilingual clinical first-aid guidance & CPR metronome
+├── dashboard.html              # Volunteer proximity radar & hospital pre-alert desk
+├── history.html                # Verified audit log and bystander response metrics
+├── server.js                   # Zero-dependency primary HTTP server (Node.js built-ins)
+├── package.json                # Project metadata, scripts, and optional dependencies
+├── render.yaml                 # Infrastructure-as-code blueprint for Render deployment
+├── goldenhour_db.json          # Persistent JSON datastore with atomic file writing
+├── LICENSE                     # MIT Open-Source License
+├── README.md                   # Comprehensive platform documentation
+├── RELEASE_NOTES.md            # Release milestones, changelog, and verified metrics
+├── css/
+│   └── style.css               # Design system tokens (#FF3B30, #007AFF), glassmorphism
+├── js/
+│   ├── app.js                  # Primary client-side controller (SOS, GPS, dispatch)
+│   ├── translations.js         # Tri-lingual clinical dictionaries (EN, HI, KN)
+│   ├── metronome.js            # 110 BPM Web Audio API oscillator for CPR pacing
+│   ├── volunteers.js           # Volunteer radar and response status state machine
+│   ├── hospital.js             # Emergency trauma desk pre-alert simulation
+│   └── metrics.js              # Compliance verification and event timeline tracker
+├── src/
+│   ├── server.js               # Optional Express production server wrapper
+│   ├── db/
+│   │   ├── database.js         # Atomic JSON persistence engine with .bak backup
+│   │   └── schema.sql          # Relational SQLite reference schema
+│   ├── middleware/
+│   │   └── validation.js       # Input payload sanitization & boundary validation
+│   ├── routes/
+│   │   ├── incidents.js        # Incident creation and retrieval REST endpoints
+│   │   ├── events.js           # Chronological incident action logging endpoints
+│   │   └── demo-alerts.js      # Mock responder and hospital alert endpoints
+│   └── services/
+│       └── incident-service.js # Incident lifecycle management and event logging
+├── tests/
+│   └── api.test.js             # Zero-dependency regression test suite (12/12 passing)
+└── docs/
+    └── screenshots/            # Visual documentation assets
+```
+
+### 📱 Multi-Page Application Workflows
+
+GoldenHour separates critical emergency tasks into specialized, lightweight views:
+
+1. **Emergency SOS & Location View ([index.html](index.html))**:
+   - **India 112 Priority Dialing**: Unblocked, one-tap trigger initiating native telephone calling (`tel:112`) without requiring prior registration or GPS permissions.
+   - **Geolocation & Mapping**: Embedded Leaflet map querying OpenStreetMap tiles with automatic browser GPS lock, manual drag-pinning, and Nominatim reverse geocoding.
+   - **One-Tap Contact Dispatch**: Pre-formats localized SMS and WhatsApp distress messages containing live Google Maps location coordinates for immediate broadcast to family.
+
+2. **Verified Clinical First-Aid Guidance ([first-aid.html](first-aid.html))**:
+   - **Tri-Lingual Instructions**: Instant switching between English, Hindi (हिंदी), and Kannada (ಕನ್ನಡ).
+   - **Rhythmic Audio Metronome**: Zero-latency Web Audio API synthesizer outputting a steady 110 BPM click for chest compression rhythm.
+   - **Voice Guidance**: SpeechSynthesis API reads out actionable guidance step-by-step so bystanders can keep their hands on the patient.
+   - **Persistent 112 Notice**: Persistent top-bar reminding bystanders that emergency first aid is secondary to calling 112.
+
+3. **Volunteer Radar & Hospital Trauma Desk ([dashboard.html](dashboard.html))**:
+   - **Community Responder Radar**: Visualizes nearby certified volunteers within a 1 km radius with dynamic status tracking (`Available` → `Accepted (En Route)`).
+   - **Hospital Pre-Alert Console**: Simulates an incoming trauma pre-alert (`INC-2026-8901`) with real-time ETA countdown, enabling trauma bays to prepare equipment before patient arrival.
+
+4. **Safety Audit Trail & Metrics ([history.html](history.html))**:
+   - **Immutable Event Log**: Records chronological bystander actions (`INCIDENT_CREATED`, `112_CALLED`, `CPR_STARTED`) to measure bystander time-to-first-action.
+   - **Compliance Matrix**: Verifies platform compliance against non-diagnostic boundaries and synthetic demo invariants.
+
+### Components Architecture
 - **Frontend**: Mobile-first Single Page Application in [index.html](index.html) with responsive layouts (desktop header tabs and mobile bottom navigation dock). Dedicated views: [first-aid.html](first-aid.html), [dashboard.html](dashboard.html), [history.html](history.html).
 - **Styling**: Vanilla CSS3 design system ([css/style.css](css/style.css)) using emergency tokens (`#FF3B30`, `#007AFF`, `#34C759`, dark slate glassmorphism). Zero CSS build dependencies.
 - **Audio & Speech**: Zero-latency **Web Audio API** oscillator for the 110 BPM CPR compression rhythm ([js/metronome.js](js/metronome.js)); native **Web Speech API** (`window.speechSynthesis`) for multilingual audio guidance.
@@ -235,12 +300,32 @@ node tests/api.test.js
 
 ## ⚕️ 9. Clinical Guidelines & Medical Attributions
 
-All first-aid instructions adhere strictly to published Basic Life Support (BLS) protocols:
-- **Adult Cardiac Arrest & CPR**: Indian Resuscitation Council (IRC) Comprehensive Cardiopulmonary Life Support (CCLS) guidelines & European Resuscitation Council (ERC) BLS standards.
-  - **Metronome**: Target rhythm set to **110 BPM** (within the clinical target of 100–120 compressions/min).
-  - **Compression-to-Breath Protocol**: Instructs trained rescuers on the 30:2 cycle and advises untrained bystanders to maintain continuous *hands-only* chest compressions without pausing.
-- **Severe Bleeding Control**: Step-by-step direct firm pressure, wound packing, pressure bandages, and arterial tourniquet safety rules (5 cm above wound; record application time).
-- **Recovery Position**: Clear step-by-step rolling technique for unresponsive individuals who are breathing normally.
+All first-aid instructions adhere strictly to published Basic Life Support (BLS) protocols and evidence-based resuscitation science:
+
+### 9.1 Adult Cardiac Arrest & CPR Protocol
+* **Clinical Standards**: Indian Resuscitation Council (IRC) Comprehensive Cardiopulmonary Life Support (CCLS) guidelines & European Resuscitation Council (ERC 2025) BLS Standards.
+* **Target Compression Rate & Depth**: **110 BPM** (clinically optimal window: 100–120 compressions per minute) at a depth of 5–6 cm in adults, allowing complete chest recoil.
+* **Trained vs. Untrained Guidance**:
+  * **Trained Rescuers**: Instructs a 30:2 ratio of chest compressions to rescue breaths.
+  * **Untrained Bystanders**: Instructs continuous **hands-only CPR** (uninterrupted chest compressions) to maximize coronary perfusion pressure and reduce hesitation.
+* **Interactive 110 BPM CPR Metronome**: Powered by the native browser **Web Audio API** oscillator (`AudioContext`) to generate zero-latency auditory clicks alongside pulsating visual cues, preventing rescuer fatigue and tempo drift.
+* **Multilingual Audio Readouts**: Native Web Speech API (`window.speechSynthesis`) reads instructions aloud in Kannada, Hindi, or English so rescuer hands never leave the patient's chest.
+
+### 9.2 Severe Hemorrhage & Bleeding Control
+* **Step-by-Step Escalation Protocol**:
+  1. **Direct Firm Pressure**: Immediate, continuous pressure on the wound with a clean cloth, sterile dressing, or bare hands.
+  2. **Wound Packing**: Packing deep cavity/junctional wounds with sterile gauze or clean fabric while maintaining firm downward pressure.
+  3. **Pressure Bandaging**: Wrapping a tight compression dressing securely over the packed wound.
+  4. **Arterial Tourniquet**: Mandatory intervention for catastrophic limb hemorrhage when direct pressure fails. Placed 5–7 cm proximal to the wound (never directly over a joint). Protocol enforces recording the exact application time on the patient or band to prevent tissue necrosis.
+
+### 9.3 Recovery Position
+* **Clinical Indication**: Unresponsive individual who is breathing normally.
+* **Safe Lateral Technique**: Step-by-step instructions to turn the patient onto their side, extend the neck to keep the airway patent, and position limbs to prevent rolling onto the stomach or airway obstruction from emesis.
+
+### 9.4 Clinical Safety & Anti-Hallucination Policy
+* **Zero Generative AI for Medical Content**: GoldenHour strictly **does not use large language models (LLMs) or generative AI** to generate first-aid or medical advice dynamically. All medical guidance is hardcoded from peer-reviewed, vetted clinical standard operating procedures (SOPs).
+* **Non-Diagnostic Policy**: The application never prompts for symptoms, predicts disease conditions, prescribes medications, or substitutes for official paramedic care.
+* **Priority 112 Invariant**: Every screen prominently reinforces that calling India's National Emergency Helpline (**112**) is the first and non-negotiable step before or during first-aid delivery.
 
 *Disclaimer: GoldenHour is an educational bystander coordination platform. It has not undergone formal clinical device certification and is not officially certified by clinical bodies.*
 
